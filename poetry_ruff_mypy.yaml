@@ -1,0 +1,204 @@
+[tool.poetry]
+name = "project-name"
+version = "1.0.0"
+description = ""
+authors = [
+    "Dev One <dev.one@bmstu.ru>",
+    "Dev Two <dev.two@bmstu.ru>",
+]
+maintainers = [
+    "Dev One <dev.one@bmstu.ru>",
+    "Dev Two <dev.two@bmstu.ru>",
+]
+readme = "README.md"
+packages = [{include = "client"}, {include = "server"}]
+
+[tool.poetry.dependencies]
+python = "^3.13.1"
+grpcio = "1.69.0"
+grpc-stubs = "1.53.0.5"
+numpy = "2.2.1"
+matplotlib = "3.10.0"
+pandas = "2.2.3"
+clearml = "1.16.5"
+pyyaml = "6.0.2"
+dynaconf = "3.2.6"
+aiohttp = "3.11.11"
+atlassian-python-api = "3.41.18"
+mypy = "1.14.1"
+pre-commit = "4.0.1"
+pre-commit-hooks = "5.0.0"
+ruff = "0.9.1"
+pydantic = "2.10.5"
+lxml = "5.3.0"
+tritonclient = {extras = ["http"], version = "2.41.1"}
+gevent = "24.10.3"
+scikit-learn = "1.6.1"
+fastapi = "0.115.7"
+uvicorn = "0.34.0"
+cryptography = "44.0.0"
+kubernetes-asyncio = "32.0.0"
+apscheduler = "3.11.0"
+ffmpeg-python = "0.2.0"
+jiwer = "3.0.5"
+clickhouse-connect = "0.8.14"
+pypi = "2.1"
+aiostream = "0.6.4"
+opensearch-py = {version = "2.8.0", extras = ["async"]}
+python-multipart = "0.0.20"
+boto3 = "1.35.93"
+types-cachetools = "5.5.0.20240820"
+cachetools = "5.5.1"
+
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+start_load_server = "server.main:main"
+
+
+[tool.mypy]
+plugins = [
+"pydantic.mypy"
+]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[[tool.mypy.overrides]]
+module = [
+    "dynaconf",
+    "keycloak",
+    "scipy.*",
+    "prometheus_api_client",
+    "clearml",
+    "matplotlib",
+    "yaml",
+    "atlassian",
+    "urllib3.*",
+    "google.protobuf.*",
+    "requests.*",
+    "kubernetes_asyncio.*",
+    "tritonclient.*",
+    "aiohttp.*",
+    "pandas",
+    "tqdm.*",
+    "sklearn.*",
+    "lxml.*",
+    "apscheduler.*",
+    "ffmpeg.*",
+    "jiwer.*",
+    "clickhouse_connect.*",
+    "pydub.*",
+    "opensearchpy.*"
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "proto_source.crt.*",
+    "proto_source.mts.*",
+    "proto_source.sber.*",
+    "proto_source.yandex.*",
+    "proto_source.google.*"
+]
+disable_error_code = [
+    "attr-defined",
+    "name-defined",
+    "import",
+    "no-untyped-def",
+    "arg-type",
+    "type-arg",
+    "var-annotated",
+    "misc"
+]
+
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+exclude = [
+    "config/*", "data/*", "reports/*", "schedule_params/*"
+]
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "A",    # flake8-builtins
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "ERA",  # flake8-eradicate/eradicate
+    "RET",  # flake8-return
+    "SIM",  # flake8-simplify
+    "TID",  # flake8-tidy-imports
+    "ANN",  # flake8-annotations
+    "PIE",  # flake8-pie
+    "PLR",  # Pylint
+    "I",    # isort
+    "N",    # pep8-naming
+    "E",    # black
+    "PGH",  # pygrep
+    "RUF",  # ruff checks
+    "F",    # enable pyflakes
+    "UP",   # pyupgrade
+    "C901"  # cyclomatic complexity limit
+]
+ignore = [
+    "B904",   # just ignore use 'raise ... from err'
+    "B905",   # just ingore use explicit 'strict=' parameter with 'zip()'
+    "N818",   # just ignore Exception name should be named with an Error suffix
+    "UP035",  # just ignore use typing instead collections.abc
+    "A005", # just ignore shadows a Python standard-library module
+    "RUF006", # just ignore store a reference to the return value of `asyncio.create_task`
+    "ANN204", # allow no annotation in result of __init__ and other magic methods
+    "ANN401", # allow Any to build composite types and pass *args, **kwargs
+    "PLR0904", # allowed to use any number of public methods
+    "PLR0914" # allowed to use any number of local variables
+]
+unfixable = [
+    "ERA", # do not autoremove commented out code
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-between-types = 1
+lines-after-imports = 2
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pylint]
+# check defaults in https://docs.astral.sh/ruff/settings/#lintpylint
+max-args = 10
+max-returns = 10
+max-branches = 25
+max-statements = 75
+max-nested-blocks = 10
+
+[tool.ruff.lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+
+[tool.ruff.format]
+exclude = ["*.pyi"]
+
+[tool.ruff.lint.mccabe]
+# check defaults in https://docs.astral.sh/ruff/settings/#lint_mccabe_max-complexity
+max-complexity = 20
