@@ -3,16 +3,24 @@ from __future__ import annotations
 from datetime import datetime
 from typing import ClassVar
 
+from pydantic import BaseModel
 from pydantic import ValidationInfo
 from pydantic import field_validator
 
-from abstract_models.ientertainment import IEntertainment
 
-
-class Entertainment(IEntertainment):
+class Entertainment(BaseModel):
     MAX_ADDRESS_LENGTH: ClassVar[int] = 50
     MAX_NAME_LENGTH: ClassVar[int] = 100
     MAX_RATE: ClassVar[int] = 5
+
+    entertainment_id: int
+    cost: int
+    address: str
+    name: str
+    e_type: str
+    rating: int
+    entry_datetime: datetime
+    departure_datetime: datetime 
 
     @field_validator('entertainment_id')
     @classmethod

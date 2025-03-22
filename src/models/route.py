@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from pydantic import BaseModel
+from pydantic import Field
 from pydantic import field_validator
 
-from abstract_models.iroute import IRoute
 from models.directory_route import DirectoryRoute
 
 
-class Route(IRoute):
+class Route(BaseModel):
+    route_id: int
+    d_route: DirectoryRoute | None = Field(default=None, description="Справочник маршрутов")
+    
     @field_validator('route_id')
     @classmethod
     def check_route_id(cls, value: int) -> int:

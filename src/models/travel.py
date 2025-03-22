@@ -1,15 +1,23 @@
 from __future__ import annotations
 
+from pydantic import BaseModel
+from pydantic import Field
 from pydantic import field_validator
 
-from abstract_models.itravel import ITravel
 from models.accommodation import Accommodation
 from models.entertainment import Entertainment
 from models.route import Route
 from models.user import User
 
 
-class Travel(ITravel):
+class Travel(BaseModel):
+    travel_id: int
+    status: str
+    route: Route | None = Field(default=None, description="ID маршрута")
+    users: User | None = Field(default=None, description="ID пользователя")
+    entertainments: list[Entertainment] = Field(default_factory=list, description="Список развлечения")
+    accommodations: list[Accommodation] = Field(default_factory=list, description="Список размещения")
+
     @field_validator('travel_id')
     @classmethod
     def check_travel_id(cls, value: int) -> int:

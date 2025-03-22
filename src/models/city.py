@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from pydantic import BaseModel
 from pydantic import field_validator
 
-from abstract_models.icity import ICity
 
-
-class City(ICity):
+class City(BaseModel):
     MAX_NAME_LENGTH: ClassVar[int] = 50
+    city_id: int
+    name: str
 
     @field_validator('city_id')
     @classmethod

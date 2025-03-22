@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import re
 
+from datetime import datetime
+
+from pydantic import BaseModel
 from pydantic import field_validator
 
-from abstract_models.iaccommodation import IAccommodation
 
+class Accommodation(BaseModel):
+    accommodation_id: int
+    duration: str
+    location: str
+    a_type: str
+    datetime: datetime 
 
-class Accommodation(IAccommodation):
     @field_validator('accommodation_id')
     @classmethod
     def check_accommodation_id(cls, value: int) -> int:

@@ -4,16 +4,24 @@ import re
 
 from typing import ClassVar
 
+from pydantic import BaseModel
+from pydantic import EmailStr
 from pydantic import field_validator
 
-from abstract_models.iuser import IUser
 
-
-class User(IUser):
+class User(BaseModel):
     MAX_FIO_LENGTH: ClassVar[int] = 100
     MAX_LOGIN_LENGTH: ClassVar[int] = 40
     MIN_PASSWORD_LENGTH: ClassVar[int] = 8
     PASSPORT_LENGTH: ClassVar[int] = 10
+
+    user_id: int
+    fio: str
+    number_passport: str
+    phone_number: str
+    email: EmailStr
+    login: str
+    password: str
 
     @field_validator("user_id")
     @classmethod
