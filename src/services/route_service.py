@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.route_service import IRouteService
 from models.route import Route
 
 
@@ -24,7 +25,7 @@ class RouteRepository:
         return []
 
 
-class RouteService:
+class RouteService(IRouteService):
     def __init__(self, repository: RouteRepository) -> None:
         self.repository = repository
 

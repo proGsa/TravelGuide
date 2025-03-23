@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.travel_service import ITravelService
 from models.travel import Travel
 
 
@@ -24,7 +25,7 @@ class TravelRepository:
         return []
 
 
-class TravelService:
+class TravelService(ITravelService):
     def __init__(self, repository: TravelRepository) -> None:
         self.repository = repository
 

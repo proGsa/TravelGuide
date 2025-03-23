@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.city_service import ICityService
 from models.city import City
 
 
@@ -21,7 +22,7 @@ class CityRepository:
         return []
 
 
-class CityService:
+class CityService(ICityService):
     def __init__(self, repository: CityRepository) -> None:
         self.repository = repository
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.entertainment_service import IEntertainmentService
 from models.entertainment import Entertainment
 
 
@@ -17,7 +18,7 @@ class EntertainmentRepository:
         pass
 
 
-class EntertainmentService:
+class EntertainmentService(IEntertainmentService):
     def __init__(self, repository: EntertainmentRepository) -> None:
         self.repository = repository
 

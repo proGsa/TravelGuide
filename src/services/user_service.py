@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from abstract_service.user_service import IAuthService
+from abstract_service.user_service import IUserService
 from models.user import User
 
 
@@ -20,7 +22,7 @@ class UserRepository:
         pass
 
 
-class UserService:
+class UserService(IUserService):
     def __init__(self, repository: UserRepository) -> None:
         self.repository = repository
 
@@ -42,7 +44,7 @@ class UserService:
             raise ValueError("Пользователь не найден.")
         
 
-class AuthService:
+class AuthService(IAuthService):
     def __init__(self, repository: UserRepository) -> None:
         self.repository = repository
 

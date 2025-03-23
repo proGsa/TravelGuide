@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.directory_route_service import IDirectoryRouteService
 from models.directory_route import DirectoryRoute
 
 
@@ -17,7 +18,7 @@ class DirectoryRouteRepository:
         pass
 
 
-class DirectoryRouteService:
+class DirectoryRouteService(IDirectoryRouteService):
     def __init__(self, repository: DirectoryRouteRepository) -> None:
         self.repository = repository
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abstract_service.accommodation_service import IAccommodationService
 from models.accommodation import Accommodation
 
 
@@ -17,7 +18,7 @@ class AccommodationRepository:
         pass
 
 
-class AccommodationService:
+class AccommodationService(IAccommodationService):
     def __init__(self, repository: AccommodationRepository) -> None:
         self.repository = repository
 
