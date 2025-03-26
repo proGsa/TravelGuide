@@ -32,7 +32,7 @@ class DirectoryRoute(BaseModel):
     @field_validator('type_transport')
     @classmethod
     def validate_type_transport(cls, v: str) -> str:
-        allowed_types = {'Автобус', 'Самолет', 'Автомобиль', 'Пароход', 'Поезд'}
+        allowed_types = {'Автобус', 'Самолет', 'Автомобиль', 'Паром', 'Поезд'}
         if v not in allowed_types:
             raise ValueError(f'e_type должен быть одним из следующих: {", ".join(allowed_types)}')
         return v

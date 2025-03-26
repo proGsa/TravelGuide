@@ -68,7 +68,6 @@ def test_should_succesfull_get_existed_travel_by_id() -> None:
     travel = Travel(
         travel_id=1,
         status="В процессе",
-        route=None,
         users=None,
         entertainments=[entertainment1, entertainment2],
         accommodations=[accommodation1, accommodation2]
@@ -122,7 +121,6 @@ def test_should_succesfull_get_travels() -> None:
         Travel(
             travel_id=1,
             status="В процессе",
-            route=None,
             users=None,
             entertainments=[entertainment1, entertainment2],
             accommodations=[accommodation1, accommodation2]
@@ -130,7 +128,6 @@ def test_should_succesfull_get_travels() -> None:
         Travel(
             travel_id=2,
             status="Завершен",
-            route=None,
             users=None,
             entertainments=[entertainment1, entertainment2],
             accommodations=[accommodation1, accommodation2]
@@ -190,7 +187,6 @@ def test_should_succesfull_update_existed_travel_by_id() -> None:
     travel = Travel(
         travel_id=1,
         status="В процессе",
-        route=None,
         users=None,
         entertainments=[entertainment1, entertainment2],
         accommodations=[accommodation1, accommodation2]
@@ -243,7 +239,6 @@ def test_service_should_throw_exception_at_update_not_existed_travel() -> None:
     travel = Travel(
         travel_id=1,
         status="В процессе",
-        route=None,
         users=None,
         entertainments=[entertainment1, entertainment2],
         accommodations=[accommodation1, accommodation2]
