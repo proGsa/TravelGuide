@@ -14,7 +14,7 @@ class EntertainmentRepository(IEntertainmentRepository):
         self.engine = engine
 
     def get_list(self) -> list[Entertainment]:
-        query = text("SELECT * FROM travel_db.entertainment")
+        query = text("SELECT * FROM entertainment")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query).mappings()
@@ -36,7 +36,7 @@ class EntertainmentRepository(IEntertainmentRepository):
             return []
 
     def get_by_id(self, entertainment_id: int) -> Entertainment | None:
-        query = text("SELECT * FROM travel_db.entertainment WHERE id = :entertainment_id")
+        query = text("SELECT * FROM entertainment WHERE id = :entertainment_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"entertainment_id": entertainment_id}).mappings().first()
@@ -57,7 +57,7 @@ class EntertainmentRepository(IEntertainmentRepository):
 
     def add(self, entertainment: Entertainment) -> None:
         query = text("""
-            INSERT INTO travel_db.entertainment (price, address, name, type, rating, check_in, check_out)
+            INSERT INTO entertainment (price, address, name, type, rating, check_in, check_out)
             VALUES (:price, :address, :name, :e_type, :rating, :check_in, :check_out)
         """)
         try:
@@ -78,7 +78,7 @@ class EntertainmentRepository(IEntertainmentRepository):
 
     def update(self, update_entertainment: Entertainment) -> None:
         query = text("""
-            UPDATE travel_db.entertainment
+            UPDATE entertainment
             SET price = :price,
                 address = :address,
                 name = :name,
@@ -104,7 +104,7 @@ class EntertainmentRepository(IEntertainmentRepository):
             print(f"Ошибка при обновлении размещения с ID {update_entertainment.entertainment_id}: {e}")
             
     def delete(self, entertainment_id: int) -> None:
-        query = text("DELETE FROM travel_db.entertainment WHERE id = :entertainment_id")
+        query = text("DELETE FROM entertainment WHERE id = :entertainment_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(query, {"entertainment_id": entertainment_id})

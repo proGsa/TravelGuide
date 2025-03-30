@@ -14,7 +14,7 @@ class AccommodationRepository(IAccommodationRepository):
         self.engine = engine
 
     def get_list(self) -> list[Accommodation]:
-        query = text("SELECT * FROM travel_db.accommodations")
+        query = text("SELECT * FROM accommodations")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query).mappings()
@@ -33,7 +33,7 @@ class AccommodationRepository(IAccommodationRepository):
             return []
 
     def get_by_id(self, accommodation_id: int) -> Accommodation | None:
-        query = text("SELECT * FROM travel_db.accommodations WHERE id = :accommodation_id")
+        query = text("SELECT * FROM accommodations WHERE id = :accommodation_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"accommodation_id": accommodation_id}).mappings().first()
@@ -51,7 +51,7 @@ class AccommodationRepository(IAccommodationRepository):
 
     def add(self, accommodation: Accommodation) -> None:
         query = text("""
-            INSERT INTO travel_db.accommodations (duration, address, event_name, event_time)
+            INSERT INTO accommodations (duration, address, event_name, event_time)
             VALUES (:duration, :address, :event_name, :event_time)
         """)
         try:
@@ -63,14 +63,12 @@ class AccommodationRepository(IAccommodationRepository):
                     "event_name": accommodation.a_type,
                     "event_time": accommodation.datetime
                 })
-        except IntegrityError:
-            print("Ошибка: такие развлечений уже существует.")
         except SQLAlchemyError as e:
             print(f"Ошибка при добавлении развлечений: {e}")
 
     def update(self, update_accommodation: Accommodation) -> None:
         query = text("""
-            UPDATE travel_db.accommodations
+            UPDATE accommodations
             SET duration = :duration,
                 address = :address,
                 event_name = :event_name,
@@ -90,7 +88,7 @@ class AccommodationRepository(IAccommodationRepository):
             print(f"Ошибка при обновлении развлечений с ID {update_accommodation.accommodation_id}: {e}")
             
     def delete(self, accommodation_id: int) -> None:
-        query = text("DELETE FROM travel_db.accommodations WHERE id = :accommodation_id")
+        query = text("DELETE FROM accommodations WHERE id = :accommodation_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(query, {"accommodation_id": accommodation_id})

@@ -16,7 +16,7 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
         self.city_repo = city_repo
 
     def get_list(self) -> list[DirectoryRoute]:
-        query = text("SELECT * FROM travel_db.directory_route")
+        query = text("SELECT * FROM directory_route")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query).mappings()
@@ -36,7 +36,7 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             return []
 
     def get_by_id(self, directory_route_id: int) -> DirectoryRoute | None:
-        query = text("SELECT * FROM travel_db.directory_route WHERE id = :directory_route_id")
+        query = text("SELECT * FROM directory_route WHERE id = :directory_route_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"directory_route_id": directory_route_id}).mappings().first()
@@ -62,7 +62,7 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             print("Ошибка: Отсутствуют данные о городах")
             return
         query = text("""
-            INSERT INTO travel_db.directory_route (type_transport, price, distance, departure_city, arrival_city)
+            INSERT INTO directory_route (type_transport, price, distance, departure_city, arrival_city)
             VALUES (:type_transport, :price, :distance, :departure_city, :arrival_city)
         """)
         try:
@@ -84,7 +84,7 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             print("Ошибка: Отсутствуют данные о городах")
             return
         query = text("""
-            UPDATE travel_db.directory_route
+            UPDATE directory_route
             SET type_transport = :type_transport,
                 price = :price,
                 distance = :distance,
@@ -106,7 +106,7 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             print(f"Ошибка при обновлении справочника маршрутов с ID {update_directory_route.d_route_id}: {e}")
             
     def delete(self, directory_route_id: int) -> None:
-        query = text("DELETE FROM travel_db.directory_route WHERE id = :directory_route_id")
+        query = text("DELETE FROM directory_route WHERE id = :directory_route_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(query, {"directory_route_id": directory_route_id})

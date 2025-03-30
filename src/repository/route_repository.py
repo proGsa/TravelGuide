@@ -18,7 +18,7 @@ class RouteRepository(IRouteRepository):
         self.travel_repo = travel_repo
 
     def get_list(self) -> list[Route]:
-        query = text("SELECT * FROM travel_db.route")
+        query = text("SELECT * FROM route")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query).mappings()
@@ -37,7 +37,7 @@ class RouteRepository(IRouteRepository):
             return []
 
     def get_by_id(self, route_id: int) -> Route | None:
-        query = text("SELECT * FROM travel_db.route WHERE id = :route_id")
+        query = text("SELECT * FROM route WHERE id = :route_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"route_id": route_id}).mappings().first()
@@ -62,7 +62,7 @@ class RouteRepository(IRouteRepository):
             print("Ошибка: Отсутствуют данные о справочнике путешествий")
             return
         query = text("""
-            INSERT INTO travel_db.route (d_route_id, travel_id, start_time, end_time)
+            INSERT INTO route (d_route_id, travel_id, start_time, end_time)
             VALUES (:d_route_id, :travel_id, :start_time, :end_time)
         """)
         try:
@@ -87,7 +87,7 @@ class RouteRepository(IRouteRepository):
             print("Ошибка: Отсутствуют данные о справочнике путешествий")
             return
         query = text("""
-            UPDATE travel_db.route
+            UPDATE route
             SET d_route_id = :d_route_id,
             travel_id = :travel_id,
             start_time = :start_time,
@@ -107,7 +107,7 @@ class RouteRepository(IRouteRepository):
             print(f"Ошибка при обновлении маршрута с ID {update_route.route_id}: {e}")
             
     def delete(self, route_id: int) -> None:
-        query = text("DELETE FROM travel_db.route WHERE id = :route_id")
+        query = text("DELETE FROM route WHERE id = :route_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(query, {"route_id": route_id})

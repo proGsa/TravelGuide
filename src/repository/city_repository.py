@@ -14,7 +14,7 @@ class CityRepository(ICityRepository):
         self.engine = engine
 
     def get_list(self) -> list[City]:
-        query = text("SELECT * FROM travel_db.city")
+        query = text("SELECT * FROM city")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query)
@@ -30,7 +30,7 @@ class CityRepository(ICityRepository):
             return []
 
     def get_by_id(self, city_id: int) -> City | None:
-        query = text("SELECT * FROM travel_db.city WHERE city_id = :city_id")
+        query = text("SELECT * FROM city WHERE city_id = :city_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"city_id": city_id}).mappings().first()
@@ -41,7 +41,7 @@ class CityRepository(ICityRepository):
 
     def add(self, city: City) -> None:
         query = text("""
-            INSERT INTO travel_db.city (name)
+            INSERT INTO city (name)
             VALUES (:name)
         """)
         try:
@@ -56,7 +56,7 @@ class CityRepository(ICityRepository):
 
     def update(self, update_city: City) -> None:
         query = text("""
-            UPDATE travel_db.city
+            UPDATE city
             SET name = :name
             WHERE city_id = :city_id
         """)
@@ -70,7 +70,7 @@ class CityRepository(ICityRepository):
             print(f"Ошибка при обновлении города с ID {update_city.city_id}: {e}")
 
     def delete(self, city_id: int) -> None:
-        query = text("DELETE FROM travel_db.city WHERE id = :city_id")
+        query = text("DELETE FROM city WHERE city_id = :city_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(query, {"city_id": city_id})

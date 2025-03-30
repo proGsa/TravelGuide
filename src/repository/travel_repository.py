@@ -23,7 +23,7 @@ class TravelRepository(ITravelRepository):
         self.accommodation_repo = a_repo
 
     def get_accommodations_by_travel(self, travel_id: int) -> list[Accommodation]:
-        query = text("SELECT accommodation_id FROM travel_db.travel_accommodations WHERE travel_id = :travel_id")
+        query = text("SELECT accommodation_id FROM travel_accommodations WHERE travel_id = :travel_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"travel_id": travel_id}).mappings()
@@ -36,7 +36,7 @@ class TravelRepository(ITravelRepository):
             return []
     
     def get_entertainments_by_travel(self, travel_id: int) -> list[Entertainment]:
-        query = text("SELECT entertainment_id FROM travel_db.travel_entertainment WHERE travel_id = :travel_id")
+        query = text("SELECT entertainment_id FROM travel_entertainment WHERE travel_id = :travel_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"travel_id": travel_id}).mappings()
@@ -49,7 +49,7 @@ class TravelRepository(ITravelRepository):
             return []
 
     def get_list(self) -> list[Travel]:
-        query = text("SELECT * FROM travel_db.travel")
+        query = text("SELECT * FROM travel")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query).mappings()
@@ -68,7 +68,7 @@ class TravelRepository(ITravelRepository):
             return []
 
     def get_by_id(self, travel_id: int) -> Travel | None:
-        query = text("SELECT * FROM travel_db.travel WHERE id = :travel_id")
+        query = text("SELECT * FROM travel WHERE id = :travel_id")
         try:
             with self.engine.connect() as conn:
                 result = conn.execute(query, {"travel_id": travel_id}).mappings().first()
@@ -90,17 +90,17 @@ class TravelRepository(ITravelRepository):
             print("Ошибка: Отсутствуют данные о пользователях")
             return
         query = text("""
-            INSERT INTO travel_db.travel (status, user_id)
+            INSERT INTO travel (status, user_id)
             VALUES (:status, :user_id)
             RETURNING id
         """)
         entertainment_query = text("""
-            INSERT INTO travel_db.travel_entertainment (travel_id, entertainment_id)
+            INSERT INTO travel_entertainment (travel_id, entertainment_id)
             VALUES (:travel_id, :entertainment_id)
         """)
 
         accommodation_query = text("""
-            INSERT INTO travel_db.travel_accommodations (travel_id, accommodation_id)
+            INSERT INTO travel_accommodations (travel_id, accommodation_id)
             VALUES (:travel_id, :accommodation_id)
         """)
 
@@ -142,30 +142,30 @@ class TravelRepository(ITravelRepository):
             print("Ошибка: Отсутствуют данные о пользователях")
             return
         check_query = text("""
-            SELECT 1 FROM travel_db.travel WHERE id = :travel_id
+            SELECT 1 FROM travel WHERE id = :travel_id
         """)
         update_travel_query = text("""
-            UPDATE travel_db.travel
+            UPDATE travel
             SET status = :status,
                 user_id = :user_id
             WHERE id = :travel_id
         """)
 
         delete_entertainments_query = text("""
-            DELETE FROM travel_db.travel_entertainment WHERE travel_id = :travel_id
+            DELETE FROM travel_entertainment WHERE travel_id = :travel_id
         """)
         
         delete_accommodations_query = text("""
-            DELETE FROM travel_db.travel_accommodations WHERE travel_id = :travel_id
+            DELETE FROM travel_accommodations WHERE travel_id = :travel_id
         """)
 
         entertainment_query = text("""
-            INSERT INTO travel_db.travel_entertainment (travel_id, entertainment_id)
+            INSERT INTO travel_entertainment (travel_id, entertainment_id)
             VALUES (:travel_id, :entertainment_id)
         """)
 
         accommodation_query = text("""
-            INSERT INTO travel_db.travel_accommodations (travel_id, accommodation_id)
+            INSERT INTO travel_accommodations (travel_id, accommodation_id)
             VALUES (:travel_id, :accommodation_id)
         """)
 
@@ -209,14 +209,14 @@ class TravelRepository(ITravelRepository):
             
     def delete(self, travel_id: int) -> None:
         delete_entertainments_query = text("""
-            DELETE FROM travel_db.travel_entertainment WHERE travel_id = :travel_id
+            DELETE FROM travel_entertainment WHERE travel_id = :travel_id
         """)
 
         delete_accommodations_query = text("""
-            DELETE FROM travel_db.travel_accommodations WHERE travel_id = :travel_id
+            DELETE FROM travel_accommodations WHERE travel_id = :travel_id
         """)
 
-        query = text("DELETE FROM travel_db.travel WHERE id = :travel_id")
+        query = text("DELETE FROM travel WHERE id = :travel_id")
         try:
             with self.engine.connect() as conn:
                 conn.execute(delete_entertainments_query, {"travel_id": travel_id})
