@@ -182,3 +182,23 @@ def test_get_list_user(db_connection: Connection) -> None:
     expected_user_names.sort(key=lambda x: x["full_name"])
 
     assert list_of_users_simplified == expected_user_names
+
+def test_get_exist_user_by_login(db_connection: Connection) -> None:
+    user_repo = UserRepository(db_connection.engine)
+    
+    user = user_repo.get_by_login("user1")
+    
+    assert user is not None
+    
+    assert user.login == "user1"
+    assert user.fio == "Лобач Анастасия Олеговна"
+    assert user.email == "nastya@lobach.info"
+    assert user.phone_number == "89261111111"
+    assert user.number_passport == "1111111111"
+
+def test_get_non_exist_user_by_login(db_connection: Connection) -> None:
+    user_repo = UserRepository(db_connection.engine)
+    
+    user = user_repo.get_by_login("nonexistent_user")
+    
+    assert user is None

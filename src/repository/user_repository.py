@@ -54,6 +54,28 @@ class UserRepository(IUserRepository):
             print(f"Ошибка при получении пользователя по ID {user_id}: {e}")
             return None
 
+    def get_by_login(self, login: str) -> User | None:
+        query = text("SELECT * FROM users WHERE username = :login")
+        try:
+            with self.engine.connect() as conn:
+                result = conn.execute(query, {"login": login})
+                row = result.mappings().first() 
+                if row:
+                    return User(
+                        user_id=row["id"],
+                        fio=row["full_name"],
+                        number_passport=row["passport"],
+                        phone_number=row["phone"],
+                        email=row["email"],
+                        login=row["username"],
+                        password=row["password"]
+                    )
+                else:
+                    return None 
+        except SQLAlchemyError as e:
+            print(f"Ошибка при получении пользователя по логину: {e}")
+            return None
+
     def add(self, user: User) -> None:
         query = text("""
             INSERT INTO users (full_name, passport, phone, email, username, password)
