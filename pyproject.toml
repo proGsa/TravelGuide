@@ -8,10 +8,13 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic (>=2.10.6,<3.0.0)",
-    "email-validator (>=2.2.0,<3.0.0)"
+    "pydantic[email] (>=2.10.6,<3.0.0)",
+    "email-validator (>=2.2.0,<3.0.0)",
+    "sqlalchemy[asyncio] (>=2.0.40,<3.0.0)",
+    "psycopg2 (>=2.9.10,<3.0.0)",
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "pytest-asyncio (>=0.26.0,<0.27.0)",
 ]
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -111,6 +114,7 @@ select = [
 ]
 ignore = [
     "RUF001",
+    "RUF029",
     "B904",   # just ignore use 'raise ... from err'
     "B905",   # just ingore use explicit 'strict=' parameter with 'zip()'
     "N818",   # just ignore Exception name should be named with an Error suffix
@@ -157,4 +161,6 @@ max-complexity = 20
 pytest = "^8.3.5"
 ruff = "^0.11.0"
 mypy = "^1.15.0"
+sqlalchemy-stubs = "^0.4"
+pytest-asyncio = "^0.26.0"
 

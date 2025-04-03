@@ -6,14 +6,12 @@ from pydantic import field_validator
 
 from models.accommodation import Accommodation
 from models.entertainment import Entertainment
-from models.route import Route
 from models.user import User
 
 
 class Travel(BaseModel):
     travel_id: int
     status: str
-    route: Route | None = Field(default=None, description="ID маршрута")
     users: User | None = Field(default=None, description="ID пользователя")
     entertainments: list[Entertainment] = Field(default_factory=list, description="Список развлечения")
     accommodations: list[Accommodation] = Field(default_factory=list, description="Список размещения")
@@ -28,17 +26,10 @@ class Travel(BaseModel):
     @field_validator('status')
     @classmethod
     def validate_status(cls, v: str) -> str:
-        allowed_types = {'В процессе', 'Завершен', 'B обработке'}
+        allowed_types = {'В процессе', 'Завершен', 'Планируется', 'Отменен'}
         if v not in allowed_types:
             raise ValueError(f'e_type должен быть одним из следующих: {", ".join(allowed_types)}')
         return v
-    
-    @field_validator('route')
-    @classmethod
-    def check_route(cls, value: Route | None) -> Route | None:
-        if value is not None and not isinstance(value, Route):
-            raise ValueError('route должен быть экземпляром Route')
-        return value
     
     @field_validator('users')
     @classmethod
