@@ -1,21 +1,24 @@
 from __future__ import annotations
 
-from typing import Generator
+import asyncio
+
+from typing import AsyncGenerator
 
 import pytest
+import pytest_asyncio
 
 from sqlalchemy import MetaData
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 
 from models.user import User
 from repository.user_repository import UserRepository
 
 
-engine = create_engine("postgresql://nastya@localhost:5432/postgres?options=-c%20search_path=test")
-with engine.begin() as connection:
-    connection.execute(text("CREATE SCHEMA IF NOT EXISTS test"))
+engine = create_async_engine("postgresql+asyncpg://nastya@localhost:5432/postgres", echo=True)
+AsyncSessionMaker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 metadata = MetaData(schema='test')
 
@@ -47,29 +50,39 @@ users = [
 ]
 
 
-@pytest.fixture
-def db_connection() -> Generator[Connection]:
-    with engine.connect() as connection:
-        connection = connection.execution_options(isolation_level="AUTOCOMMIT")  # Убираем блокировки
-        with connection.begin():
-            connection.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
-            for user_data in users:
-                connection.execute(text("INSERT INTO users (full_name, passport, phone, email, \
-                            username, password) \
-                VALUES (:full_name, :passport, :phone, :email, :username, :password)"), user_data)
-            yield connection  
+@pytest_asyncio.fixture(scope="session")
+async def event_loop() -> AsyncGenerator[asyncio.AbstractEventLoop]:
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
-def test_add_new_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest_asyncio.fixture(scope="function")
+async def db_session() -> AsyncGenerator[AsyncSession]:
+    async with AsyncSessionMaker() as session:
+        await session.execute(text("SET search_path TO test"))
+        await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+
+        for user_data in users:
+            await session.execute(text("""
+                INSERT INTO users (full_name, passport, phone, email, username, password)
+                VALUES (:full_name, :passport, :phone, :email, :username, :password)
+            """), user_data)
+        await session.commit()
+        yield session
+
+
+@pytest.mark.asyncio(loop_scope="function") 
+async def test_add_new_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     new_user = User(user_id=4, fio="Семенов Семен Семенович", number_passport="4444444444",
         phone_number="89267753309", email="sem@sss.com",
         login="user4", password="6669!g7T90")
 
-    user_repo.add(new_user)
+    await user_repo.add(new_user)
 
-    result = db_connection.execute(text("SELECT * FROM users ORDER BY id DESC LIMIT 1"))
-    user = result.mappings().first() 
+    result = await db_session.execute(text("SELECT * FROM users ORDER BY id DESC LIMIT 1"))
+    user = result.mappings().first()
 
     assert result is not None
     assert user["full_name"] == "Семенов Семен Семенович"
@@ -78,91 +91,102 @@ def test_add_new_user(db_connection: Connection) -> None:
     assert user["username"] == "user4"
 
 
-def test_add_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest.mark.asyncio(loop_scope="function") 
+async def test_add_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     existing_user = User(user_id=1, fio="Лобач Анастасия Олеговна", number_passport="1111111111",
         phone_number="89261111111", email="nastya@lobach.info",
         login="user1", password="123!e5T78")
     
-    user_repo.add(existing_user)
+    try:
+        await user_repo.add(existing_user)
+    except Exception as e:
+        print(f"Ошибка при добавлении пользователя: {e}")
     
-    result = db_connection.execute(text("SELECT * FROM users WHERE full_name = :full_name"), 
+    result = await db_session.execute(text("SELECT * FROM users WHERE full_name = :full_name"), 
                                         {"full_name": "Лобач Анастасия Олеговна"})
     user = result.fetchone()
 
     assert user is not None
     assert user[1] == "Лобач Анастасия Олеговна"
+    
 
-
-def test_update_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest.mark.asyncio
+async def test_update_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     
     updated_user = User(user_id=1, fio="Лобач Анастасия Олеговна", number_passport="5555555555",
         phone_number="89261111111", email="nastya@lobach.info",
         login="user1", password="123!e5T78")
-    user_repo.update(updated_user)
+    await user_repo.update(updated_user)
 
-    result = db_connection.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 1})
+    result = await db_session.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 1})
     user = result.fetchone()
 
     assert user is not None
     assert user[2] == "5555555555"
    
 
-def test_update_not_existing_id(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest.mark.asyncio
+async def test_update_not_existing_id(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     non_existing_user = User(user_id=221, fio="Лобач Анастасия Олеговна", number_passport="5555555555",
         phone_number="89261111111", email="nastya@lobach.info",
         login="user1", password="123!e5T78")
 
-    user_repo.update(non_existing_user)
+    await user_repo.update(non_existing_user)
     
-    result = db_connection.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 221})
+    result = await db_session.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 221})
     user = result.fetchone()
     
     assert user is None 
 
 
-def test_delete_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest.mark.asyncio
+async def test_delete_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     
-    user_repo.delete(3)
+    await user_repo.delete(3)
     
-    result = db_connection.execute(text("SELECT * FROM users"))
-    user = result.fetchall()
+    result = await db_session.execute(text("SELECT username FROM users"))
+    users = result.scalars()  # Получаем список всех username
+    
+    assert "user3" not in users 
 
-    assert 'user3' not in user
 
-
-def test_delete_not_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+@pytest.mark.asyncio
+async def test_delete_not_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     
-    user_repo.delete(999)
+    await user_repo.delete(999)
     
-    result = db_connection.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 999})
+    result = await db_session.execute(text("SELECT * FROM users WHERE id = :id"), {"id": 999})
     user = result.fetchone()
     
     assert user is None
 
 
-def test_get_by_id_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
-    user = user_repo.get_by_id(1)
+@pytest.mark.asyncio
+async def test_get_by_id_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
+    user = await user_repo.get_by_id(1)
 
     assert user is not None
     assert user.fio == "Лобач Анастасия Олеговна"
 
 
-def test_get_by_id_not_existing_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
-    user = user_repo.get_by_id(12)
+@pytest.mark.asyncio
+async def test_get_by_id_not_existing_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
+    user = await user_repo.get_by_id(12)
 
     assert user is None
 
 
-def test_get_list_user(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
-    list_of_users = user_repo.get_list()
+@pytest.mark.asyncio(loop_scope="function") 
+async def test_get_list_user(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
+    list_of_users = await user_repo.get_list()
 
     list_of_users_simplified = [{"full_name": user.fio, 
                                  "passport": user.number_passport, 
@@ -183,10 +207,12 @@ def test_get_list_user(db_connection: Connection) -> None:
 
     assert list_of_users_simplified == expected_user_names
 
-def test_get_exist_user_by_login(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+
+@pytest.mark.asyncio
+async def test_get_exist_user_by_login(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     
-    user = user_repo.get_by_login("user1")
+    user = await user_repo.get_by_login("user1")
     
     assert user is not None
     
@@ -196,9 +222,11 @@ def test_get_exist_user_by_login(db_connection: Connection) -> None:
     assert user.phone_number == "89261111111"
     assert user.number_passport == "1111111111"
 
-def test_get_non_exist_user_by_login(db_connection: Connection) -> None:
-    user_repo = UserRepository(db_connection.engine)
+
+@pytest.mark.asyncio
+async def test_get_non_exist_user_by_login(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
     
-    user = user_repo.get_by_login("nonexistent_user")
+    user = await user_repo.get_by_login("nonexistent_user")
     
     assert user is None

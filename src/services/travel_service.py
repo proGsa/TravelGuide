@@ -24,6 +24,10 @@ class TravelRepository:
     def values() -> list[Travel]:
         return []
 
+    @staticmethod
+    def search(travel_dict: dict[str, str]) -> list[Travel]:
+        return []
+
 
 class TravelService(ITravelService):
     def __init__(self, repository: TravelRepository) -> None:
@@ -55,3 +59,8 @@ class TravelService(ITravelService):
         except (Exception):
             raise ValueError("Путешествие не найдено.")
 
+    def search(self, travel_dict: dict[str, str]) -> list[Travel]:
+        try:
+            return self.repository.search(travel_dict)
+        except (Exception):
+            raise ValueError("Путешествие по переданным параметрам не найдено.")

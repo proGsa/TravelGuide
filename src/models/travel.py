@@ -26,7 +26,7 @@ class Travel(BaseModel):
     @field_validator('status')
     @classmethod
     def validate_status(cls, v: str) -> str:
-        allowed_types = {'В процессе', 'Завершен', 'B обработке'}
+        allowed_types = {'В процессе', 'Завершен', 'Планируется', 'Отменен'}
         if v not in allowed_types:
             raise ValueError(f'e_type должен быть одним из следующих: {", ".join(allowed_types)}')
         return v
