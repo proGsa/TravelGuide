@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,15 +21,18 @@ class AccommodationRepository(IAccommodationRepository):
             return [
                 Accommodation(
                     accommodation_id=row["id"],
-                    duration=row["duration"],
-                    location=row["address"],
-                    a_type=row["event_name"],
-                    datetime=row["event_time"]
-                )
+                    cost=row["price"],
+                    address=row["address"],
+                    name=row["name"],
+                    e_type=row["type"],
+                    rating=row["rating"],
+                    entry_datetime=row["check_in"],
+                    departure_datetime=row["check_out"])
+                
                 for row in result
             ]
         except SQLAlchemyError as e:
-            print(f"Ошибка при получении списка развлечений: {e}")
+            print(f"Ошибка при получении списка размещения: {e}")
             return []
 
     async def get_by_id(self, accommodation_id: int) -> Accommodation | None:
@@ -39,54 +43,67 @@ class AccommodationRepository(IAccommodationRepository):
             if result:
                 return Accommodation(
                     accommodation_id=result["id"],
-                    duration=result["duration"],
-                    location=result["address"],
-                    a_type=result["event_name"],
-                    datetime=result["event_time"])
+                    cost=result["price"],
+                    address=result["address"],
+                    name=result["name"],
+                    e_type=result["type"],
+                    rating=result["rating"],
+                    entry_datetime=result["check_in"],
+                    departure_datetime=result["check_out"])
             return None
-            print("Ничего не найдено")
         except SQLAlchemyError as e:
-            print(f"Ошибка при получении развлечений по ID {accommodation_id}: {e}")
+            print(f"Ошибка при получении размещения по ID {accommodation_id}: {e}")
             return None
 
     async def add(self, accommodation: Accommodation) -> None:
         query = text("""
-            INSERT INTO accommodations (duration, address, event_name, event_time)
-            VALUES (:duration, :address, :event_name, :event_time)
+            INSERT INTO accommodations (price, address, name, type, rating, check_in, check_out)
+            VALUES (:price, :address, :name, :e_type, :rating, :check_in, :check_out)
         """)
         try:
             await self.session.execute(query, {
-                    "id": accommodation.accommodation_id,
-                    "duration": accommodation.duration,
-                    "address": accommodation.location,
-                    "event_name": accommodation.a_type,
-                    "event_time": accommodation.datetime
-                })
+                "price": accommodation.cost,
+                "address": accommodation.address,
+                "name": accommodation.name,
+                "e_type": accommodation.e_type,
+                "rating": accommodation.rating,
+                "check_in": accommodation.entry_datetime,
+                "check_out": accommodation.departure_datetime
+            })
             await self.session.commit()
+        except IntegrityError:
+            print("Ошибка: такое размещение уже существует.")
+            await self.session.rollback()
         except SQLAlchemyError as e:
-            print(f"Ошибка при добавлении развлечений: {e}")
+            print(f"Ошибка при добавлении размещения: {e}")
             await self.session.rollback()
 
     async def update(self, update_accommodation: Accommodation) -> None:
         query = text("""
             UPDATE accommodations
-            SET duration = :duration,
+            SET price = :price,
                 address = :address,
-                event_name = :event_name,
-                event_time = :event_time
+                name = :name,
+                type = :e_type,
+                rating = :rating,
+                check_in = :check_in,
+                check_out = :check_out
             WHERE id = :accommodation_id
         """)
         try:
             await self.session.execute(query, {
-                    "accommodation_id": update_accommodation.accommodation_id,
-                    "duration": update_accommodation.duration,
-                    "address": update_accommodation.location,
-                    "event_name": update_accommodation.a_type,
-                    "event_time": update_accommodation.datetime
+                    "price": update_accommodation.cost,
+                    "address": update_accommodation.address,
+                    "name": update_accommodation.name,
+                    "e_type": update_accommodation.e_type,
+                    "rating": update_accommodation.rating,
+                    "check_in": update_accommodation.entry_datetime,
+                    "check_out": update_accommodation.departure_datetime,
+                    "accommodation_id": update_accommodation.accommodation_id
                 })
-            
+            await self.session.commit()
         except SQLAlchemyError as e:
-            print(f"Ошибка при обновлении развлечений с ID {update_accommodation.accommodation_id}: {e}")
+            print(f"Ошибка при обновлении размещения с ID {update_accommodation.accommodation_id}: {e}")
             
     async def delete(self, accommodation_id: int) -> None:
         query = text("DELETE FROM accommodations WHERE id = :accommodation_id")
@@ -94,4 +111,7 @@ class AccommodationRepository(IAccommodationRepository):
             await self.session.execute(query, {"accommodation_id": accommodation_id})
             await self.session.commit()
         except SQLAlchemyError as e:
-            print(f"Ошибка при удалении развлечений с ID {accommodation_id}: {e}")
+            print(f"Ошибка при удалении размещения с ID {accommodation_id}: {e}")
+    
+
+

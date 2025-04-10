@@ -57,6 +57,25 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             print(f"Ошибка при получении справочника маршрутов по ID {directory_route_id}: {e}")
             return None
 
+    async def get_distance(self, from_city_id: int, to_city_id: int) -> int:
+        query = text("""
+            SELECT * FROM directory_route 
+            WHERE departure_city = :from_id AND arrival_city = :to_id
+        """)
+        try:
+            result = await self.session.execute(query, {
+                "from_id": from_city_id,
+                "to_id": to_city_id
+            })
+            result = result.mappings().first()
+            if result:
+                return result["distance"]
+            print(f"Маршрут {from_city_id} → {to_city_id} не найден в directory_route")
+            return 0
+        except SQLAlchemyError:
+            print("Ошибка при получении дистанции маршрута")
+            return 0
+
     async def add(self, directory_route: DirectoryRoute) -> None:
         if directory_route.departure_city is None or directory_route.destination_city is None:
             print("Ошибка: Отсутствуют данные о городах")
@@ -115,4 +134,48 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
         except SQLAlchemyError as e:
             print(f"Ошибка при удалении справочника маршрутов с ID {directory_route_id}: {e}")
 
+    async def get_by_cities(self, from_city_id: int, to_city_id: int) -> DirectoryRoute | None:
+        query = text("""
+            SELECT * FROM directory_route 
+            WHERE departure_city = :from_id AND arrival_city = :to_id
+        """)
+        try:
+            result = await self.session.execute(query, {
+                "from_id": from_city_id,
+                "to_id": to_city_id
+            })
+            result = result.mappings().first()
+            if result:
+                departure_city = await self.city_repo.get_by_id(result["departure_city"])
+                destination_city = await self.city_repo.get_by_id(result["arrival_city"])
 
+                return DirectoryRoute(
+                    d_route_id=result["id"],
+                    type_transport=result["type_transport"],
+                    cost=result["price"],
+                    distance=result["distance"],
+                    departure_city=departure_city,
+                    destination_city=destination_city
+                )
+            return None
+
+        except SQLAlchemyError:
+            print("Ошибка при удалении справочника маршрутов по городам")
+        return None
+    
+    async def change_transport(self, d_route_id: int, transport: str, cost: int) -> None:
+        query = text("""
+            UPDATE directory_route
+            SET type_transport = :type_transport,
+            price = :price,
+            WHERE id = :directory_route_id
+        """)
+        try:
+            await self.session.execute(query, {
+                "type_transport": transport,
+                "price": cost,
+                "directory_route_id": d_route_id
+            })
+            await self.session.commit()
+        except SQLAlchemyError as e:
+            print(f"Ошибка при обновлении справочника маршрутов с ID {d_route_id}: {e}")

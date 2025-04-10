@@ -1,19 +1,26 @@
 from __future__ import annotations
 
-import re
-
 from datetime import datetime
+from typing import ClassVar
 
 from pydantic import BaseModel
+from pydantic import ValidationInfo
 from pydantic import field_validator
 
 
 class Accommodation(BaseModel):
+    MAX_ADDRESS_LENGTH: ClassVar[int] = 50
+    MAX_NAME_LENGTH: ClassVar[int] = 100
+    MAX_RATE: ClassVar[int] = 5
+
     accommodation_id: int
-    duration: str
-    location: str
-    a_type: str
-    datetime: datetime 
+    cost: int
+    address: str
+    name: str
+    e_type: str
+    rating: int
+    entry_datetime: datetime
+    departure_datetime: datetime 
 
     @field_validator('accommodation_id')
     @classmethod
@@ -21,25 +28,53 @@ class Accommodation(BaseModel):
         if value <= 0:
             raise ValueError('accommodation_id должен быть положительным числом')
         return value
-    
-    @field_validator('duration')
-    @classmethod
-    def validate_duration(cls, v: str) -> str:
-        if not re.match(r'^\d+\s*(час|часа|часов)$', v):
-            raise ValueError('Продолжительность должна быть в часах')
-        return v
 
-    @field_validator('location')
+    @field_validator('cost')
     @classmethod
-    def validate_location(cls, v: str) -> str:
-        if not v:
-            raise ValueError('Location must not be empty')
-        return v
+    def check_cost_is_positive(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError('cost должен быть положительным числом')
+        return value
 
-    @field_validator('a_type')
+    @field_validator('e_type')
     @classmethod
-    def validate_a_type(cls, v: str) -> str:
-        allowed_types = {'Музей', 'Концерт', 'Выставка', 'Фестиваль', 'Достопримечательности', 'Прогулка'}
+    def validate_e_type(cls, v: str) -> str:
+        allowed_types = {'Отель', 'Хостел', 'Аппартаменты', 'Квартира'}
         if v not in allowed_types:
-            raise ValueError(f'a_type должен быть одним из следующих: {", ".join(allowed_types)}')
+            raise ValueError(f'e_type должен быть одним из следующих: {", ".join(allowed_types)}')
         return v
+
+    @field_validator('name')
+    @classmethod
+    def validate_check_name_length(cls, value: str) -> str:
+        if len(value) < 1:
+            raise ValueError('name должно быть длиннее')
+        if len(value) > cls.MAX_NAME_LENGTH:
+            raise ValueError('name должно быть короче')
+        return value
+
+    @field_validator('address')
+    @classmethod
+    def validate_check_address_length(cls, value: str) -> str:
+        if len(value) < 1:
+            raise ValueError('address должно быть длиннее')
+        if len(value) > cls.MAX_ADDRESS_LENGTH:
+            raise ValueError('address должно быть короче')
+        return value
+
+    @field_validator('rating')
+    @classmethod
+    def check_rating_between_one_and_five(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError('rate должен быть положительным числом')
+        if value > cls.MAX_RATE:
+            raise ValueError('rate не может быть больше 5')
+        return value
+        
+    @field_validator('departure_datetime')
+    @classmethod
+    def check_datetime_order(cls, value: datetime, values: ValidationInfo) -> datetime:
+        entry_time = values.data['entry_datetime']
+        if entry_time and value <= entry_time:
+            raise ValueError('departure_datetime должен быть позже entry_datetime')
+        return value

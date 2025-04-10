@@ -11,22 +11,22 @@ Travel.model_rebuild()
 
 class ITravelService(ABC):
     @abstractmethod
-    def get_by_id(self, travel_id: int) -> Travel | None:
+    async def get_by_id(self, travel_id: int) -> Travel | None:
         pass
     
     @abstractmethod
-    def get_all_travels(self) -> list[Travel]:
+    async def get_all_travels(self) -> list[Travel]:
         pass
 
     @abstractmethod
-    def add(self, travel: Travel) -> Travel:
+    async def add(self, travel: Travel) -> Travel:
         pass
 
     @abstractmethod
-    def update(self, update_travel: Travel) -> Travel:
+    async def update(self, update_travel: Travel) -> Travel:
         pass
 
     @abstractmethod
-    def delete(self, travel_id: int) -> None:
+    async def delete(self, travel_id: int) -> None:
         pass
 

@@ -11,23 +11,23 @@ Route.model_rebuild()
 
 class IRouteService(ABC):
     @abstractmethod
-    def get_by_id(self, route_id: int) -> Route | None:
+    async def get_by_id(self, route_id: int) -> Route | None:
         pass
     
     @abstractmethod
-    def get_all_routes(self) -> list[Route]:
+    async def get_all_routes(self) -> list[Route]:
         pass
 
     @abstractmethod
-    def add(self, route: Route) -> Route:
+    async def add(self, route: Route) -> Route:
         pass
 
     @abstractmethod
-    def update(self, updated_route: Route) -> Route:
+    async def update(self, updated_route: Route) -> Route:
         pass
 
     @abstractmethod
-    def delete(self, route_id: int) -> None:
+    async def delete(self, route_id: int) -> None:
         pass
 
 

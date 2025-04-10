@@ -2,47 +2,53 @@ from __future__ import annotations
 
 from abstract_service.entertainment_service import IEntertainmentService
 from models.entertainment import Entertainment
+from repository.entertainment_repository import EntertainmentRepository
 
 
-class EntertainmentRepository:
-    def get(self, entertainment_id: int) -> Entertainment | None:
-        pass
+# class EntertainmentRepository:
+#     def get(self, entertainment_id: int) -> Entertainment | None:
+#         pass
 
-    def update(self, updated_entertainment: Entertainment) -> None:
-        pass
+#     def update(self, updated_entertainment: Entertainment) -> None:
+#         pass
 
-    def delete(self, entertainment_id: int) -> None:
-        pass
+#     def delete(self, entertainment_id: int) -> None:
+#         pass
 
-    def add(self, entertainment: Entertainment) -> None:
-        pass
+#     def add(self, entertainment: Entertainment) -> None:
+#         pass
+    
+#     @staticmethod
+#     def get_list() -> list[Entertainment]:
 
 
 class EntertainmentService(IEntertainmentService):
     def __init__(self, repository: EntertainmentRepository) -> None:
         self.repository = repository
 
-    def get_by_id(self, entertainment_id: int) -> Entertainment | None:
-        return self.repository.get(entertainment_id)
+    async def get_by_id(self, entertainment_id: int) -> Entertainment | None:
+        return await self.repository.get_by_id(entertainment_id)
 
-    def add(self, entertainment: Entertainment) -> Entertainment:
+    async def add(self, entertainment: Entertainment) -> Entertainment:
         try:
-            self.repository.add(entertainment)
+            await self.repository.add(entertainment)
         except (Exception):
-            raise ValueError("Развлечение c таким ID уже существует.")
+            raise ValueError("Размещение c таким ID уже существует.")
         return entertainment
 
-    def update(self, update_entertainment: Entertainment) -> Entertainment:
+    async def update(self, update_entertainment: Entertainment) -> Entertainment:
         try:
-            self.repository.update(update_entertainment)
+            await self.repository.update(update_entertainment)
         except (Exception):
-            raise ValueError("Развлечение не найдено.")
+            raise ValueError("Размещение не найдено.")
+        
         return update_entertainment
 
-    def delete(self, entertainment_id: int) -> None:
+    async def delete(self, entertainment_id: int) -> None:
         try:
-            self.repository.delete(entertainment_id)
+            await self.repository.delete(entertainment_id)
         except (Exception):
-            raise ValueError("Развлечение не найдено.")
+            raise ValueError("Размещение не найдено.")
 
-
+    async def get_all(self) -> list[Entertainment]:
+        return await self.repository.get_list()

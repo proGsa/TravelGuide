@@ -2,48 +2,61 @@ from __future__ import annotations
 
 from abstract_service.directory_route_service import IDirectoryRouteService
 from models.directory_route import DirectoryRoute
+from repository.directory_route_repository import DirectoryRouteRepository
 
 
-class DirectoryRouteRepository:
-    def get(self, directory_route_id: int) -> DirectoryRoute | None:
-        pass
+# class DirectoryRouteRepository:
+#     def get(self, directory_route_id: int) -> DirectoryRoute | None:
+#         pass
 
-    def update(self, updated_directory_route: DirectoryRoute) -> None:
-        pass
+#     def update(self, updated_directory_route: DirectoryRoute) -> None:
+#         pass
 
-    def delete(self, directory_route_id: int) -> None:
-        pass
+#     def delete(self, directory_route_id: int) -> None:
+#         pass
 
-    def add(self, directory_route: DirectoryRoute) -> None:
-        pass
+#     def add(self, directory_route: DirectoryRoute) -> None:
+#         pass
 
 
 class DirectoryRouteService(IDirectoryRouteService):
     def __init__(self, repository: DirectoryRouteRepository) -> None:
         self.repository = repository
 
-    def get_by_id(self, d_route_id: int) -> DirectoryRoute | None:
-        return self.repository.get(d_route_id)
+    async def get_by_id(self, d_route_id: int) -> DirectoryRoute | None:
+        return await self.repository.get_by_id(d_route_id)
 
-    def add(self, d_route: DirectoryRoute) -> DirectoryRoute:
+    async def add(self, d_route: DirectoryRoute) -> DirectoryRoute:
         try:
-            self.repository.add(d_route)
+            await self.repository.add(d_route)
         except (Exception):
             raise ValueError("Cпpaвoчник маршрутов c таким ID уже существует.")
 
         return d_route
 
-    def update(self, updated_d_route: DirectoryRoute) -> DirectoryRoute:
+    async def update(self, updated_d_route: DirectoryRoute) -> DirectoryRoute:
         try:
-            self.repository.update(updated_d_route)
+            await self.repository.update(updated_d_route)
         except (Exception):
             raise ValueError("Cпpaвoчник маршрутов не найден.")
         
         return updated_d_route
 
-    def delete(self, d_route_id: int) -> None:
+    async def delete(self, d_route_id: int) -> None:
         try:
-            self.repository.delete(d_route_id)
+            await self.repository.delete(d_route_id)
         except (Exception):
-            raise ValueError("Пользователь не найден.")
+            raise ValueError("Cпpaвoчник маршрутов не получилось удалить.")
 
+    async def get_by_cities(self, from_city_id: int, to_city_id: int) -> DirectoryRoute | None:
+        try:
+            return await self.repository.get_by_cities(from_city_id, to_city_id)
+        except (Exception):
+            raise ValueError("Cпpaвoчник маршрутов не найден.")
+        return None
+
+    async def change_transport(self, d_route_id: int, transport: str, cost: int) -> None:
+        try:
+            await self.repository.change_transport(d_route_id, transport, cost)
+        except (Exception):
+            raise ValueError("Не получилось изменить транспорт.")

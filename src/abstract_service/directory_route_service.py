@@ -8,18 +8,18 @@ from models.directory_route import DirectoryRoute
 
 class IDirectoryRouteService(ABC):
     @abstractmethod
-    def get_by_id(self, d_route_id: int) -> DirectoryRoute | None:
+    async def get_by_id(self, d_route_id: int) -> DirectoryRoute | None:
         pass
 
     @abstractmethod
-    def add(self, d_route: DirectoryRoute) -> DirectoryRoute:
+    async def add(self, d_route: DirectoryRoute) -> DirectoryRoute:
         pass
 
     @abstractmethod
-    def update(self, updated_d_route: DirectoryRoute) -> DirectoryRoute:
+    async def update(self, updated_d_route: DirectoryRoute) -> DirectoryRoute:
         pass
 
     @abstractmethod
-    def delete(self, d_route_id: int) -> None:
+    async def delete(self, d_route_id: int) -> None:
         pass
 

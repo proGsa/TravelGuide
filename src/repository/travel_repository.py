@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
@@ -232,3 +234,88 @@ class TravelRepository(ITravelRepository):
         except SQLAlchemyError as e:
             print(f"Ошибка при удалении путешествия с ID {travel_id}: {e}")
     
+    async def search(self, travel_dict: dict[str, Any]) -> list[Travel]: 
+        sql = """ SELECT DISTINCT t.* 
+        FROM travel t 
+        JOIN route r ON t.id = r.travel_id 
+        JOIN directory_route dr ON r.d_route_id = dr.id 
+        LEFT JOIN travel_entertainment te ON t.id = te.travel_id 
+        LEFT JOIN entertainment e ON te.entertainment_id = e.id 
+        WHERE t.status != 'Завершен' """ 
+        params = {}
+        if "start_time" in travel_dict:
+            sql += " AND r.start_time >= :start_time"
+            params["start_time"] = travel_dict["start_time"]
+
+        if "end_time" in travel_dict:
+            sql += " AND r.end_time <= :end_time"
+            params["end_time"] = travel_dict["end_time"]
+
+        if "departure_city" in travel_dict:
+            sql += " AND dr.departure_city = :departure_city"
+            params["departure_city"] = travel_dict["departure_city"]
+
+        if "arrival_city" in travel_dict:
+            sql += " AND dr.arrival_city = :arrival_city"
+            params["arrival_city"] = travel_dict["arrival_city"]
+
+        if "entertainment_name" in travel_dict:
+            sql += " AND e.name ILIKE :entertainment_name"
+            params["entertainment_name"] = f"%{travel_dict['entertainment_name']}%"
+        try:
+            result = await self.session.execute(text(sql), params)
+            rows = result.mappings().all() 
+            print("rows: ", rows)
+            travels = []
+            for row in rows:
+                travel = Travel(
+                    travel_id=row["id"],
+                    status=row["status"],
+                    users=await self.user_repo.get_by_id(row["user_id"]),
+                    entertainments=await self.get_entertainments_by_travel(row["id"]),
+                    accommodations=await self.get_accommodations_by_travel(row["id"])
+                )
+                print("travel: ", travel)
+                travels.append(travel)
+
+            return travels
+        except SQLAlchemyError as e:
+            print(f"Ошибка при поиске путешествий: {e}")
+            return []
+
+    async def complete(self, travel_id: int) -> None:
+        try:
+            sql = """UPDATE travel
+                    SET status = 'Завершен'
+                    WHERE id = :travel_id"""
+            await self.session.execute(text(sql), {"travel_id": travel_id})
+            await self.session.commit()
+
+        except SQLAlchemyError as e:
+            print(f"Ошибка при завершении путешествия: {e}")
+            await self.session.rollback() 
+
+    async def check_archive(self) -> list[Travel]:
+        try:
+            sql = """SELECT t.*
+                    FROM travel t
+                    WHERE t.status = 'Завершен'"""
+            
+            result = await self.session.execute(text(sql))
+            rows = result.fetchall()
+
+            travels = []
+            for row in rows:
+                travel = Travel(
+                    travel_id=row["id"],
+                    status=row["status"],
+                    users=await self.user_repo.get_by_id(row["user_id"]),
+                    entertainments=await self.get_entertainments_by_travel(row["id"]),
+                    accommodations=await self.get_accommodations_by_travel(row["id"])
+                )
+                travels.append(travel)
+            return travels
+
+        except SQLAlchemyError as e:
+            print(f"Ошибка при получении завершенных путешествий: {e}")
+            return []
