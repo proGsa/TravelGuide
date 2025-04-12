@@ -30,6 +30,9 @@ class UserService(IUserService):
     async def get_by_id(self, user_id: int) -> User | None:
         return await self.repository.get_by_id(user_id)
 
+    async def get_list(self) -> list[User]:
+        return await self.repository.get_list()
+
     async def update(self, updated_user: User) -> User:
         try:
             await self.repository.update(updated_user)

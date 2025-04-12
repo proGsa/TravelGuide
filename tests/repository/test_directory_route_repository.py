@@ -206,3 +206,17 @@ async def test_get_list_directory_route(db_session: AsyncSession) -> None:
         assert route.destination_city.city_id == expected["arrival_city"]
         assert route.distance == expected["distance"]
         assert route.cost == expected["price"]
+
+@pytest.mark.asyncio(loop_scope="function") 
+async def test_get_by_cities_success(db_session: AsyncSession):
+    city_repo = CityRepository(db_session)
+    repo = DirectoryRouteRepository(db_session, city_repo)
+
+    from_city_id = 3
+    to_city_id = 4
+
+    result: DirectoryRoute | None = await repo.get_by_cities(from_city_id, to_city_id)
+
+    assert result is not None
+    assert result.departure_city.city_id == from_city_id
+    assert result.destination_city.city_id == to_city_id

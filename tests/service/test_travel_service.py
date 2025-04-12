@@ -29,8 +29,8 @@ def test_service_should_throw_exception_at_delete_not_existed_travel() -> None:
 
 
 def test_should_succesfull_get_existed_travel_by_id() -> None:
-    entertainment1 = Entertainment(
-        entertainment_id=1,
+    accommodation1 = Accommodation(
+        accommodation_id=1,
         cost=20000,
         address="Улица Гоголя, 12",
         name="Four Seasons",
@@ -40,8 +40,8 @@ def test_should_succesfull_get_existed_travel_by_id() -> None:
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
 
-    entertainment2 = Entertainment(
-        entertainment_id=1,
+    accommodation2 = Accommodation(
+        accommodation_id=1,
         cost=10000,
         address="Улица Гоголя, 15",
         name="Чайка",
@@ -50,15 +50,15 @@ def test_should_succesfull_get_existed_travel_by_id() -> None:
         entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
-    accommodation1 = Accommodation(
-        accommodation_id=1, 
+    entertainment1 = Entertainment(
+        entertainment_id=1, 
         duration="4 часа",
         location="главная площадь", 
         a_type="Концерт", 
         datetime=datetime(2023, 10, 10, 10, 0, 0)
         )
-    accommodation2 = Accommodation(
-        accommodation_id=2, 
+    entertainment2 = Entertainment(
+        entertainment_id=2, 
         duration="4 часа",
         location="дворцовая площадь", 
         a_type="Музей", 
@@ -69,8 +69,8 @@ def test_should_succesfull_get_existed_travel_by_id() -> None:
         travel_id=1,
         status="В процессе",
         users=None,
-        entertainments=[entertainment1, entertainment2],
-        accommodations=[accommodation1, accommodation2]
+        accommodations=[accommodation1, accommodation2],
+        entertainments=[entertainment1, entertainment2]
     )
 
     with patch.object(TravelRepository, "get", return_value=travel, create=True) as mock_method:
@@ -81,8 +81,8 @@ def test_should_succesfull_get_existed_travel_by_id() -> None:
 
 
 def test_should_succesfull_get_travels() -> None:
-    entertainment1 = Entertainment(
-        entertainment_id=1,
+    accommodation1 = Accommodation(
+        accommodation_id=1,
         cost=20000,
         address="Улица Гоголя, 12",
         name="Four Seasons",
@@ -92,8 +92,8 @@ def test_should_succesfull_get_travels() -> None:
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
 
-    entertainment2 = Entertainment(
-        entertainment_id=1,
+    accommodation2 = Accommodation(
+        accommodation_id=1,
         cost=10000,
         address="Улица Гоголя, 15",
         name="Чайка",
@@ -102,15 +102,15 @@ def test_should_succesfull_get_travels() -> None:
         entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
-    accommodation1 = Accommodation(
-        accommodation_id=1, 
+    entertainment1 = Entertainment(
+        entertainment_id=1, 
         duration="4 часа",
         location="главная площадь", 
         a_type="Концерт", 
         datetime=datetime(2023, 10, 10, 10, 0, 0)
         )
-    accommodation2 = Accommodation(
-        accommodation_id=2, 
+    entertainment2 = Entertainment(
+        entertainment_id=2, 
         duration="4 часа",
         location="дворцовая площадь", 
         a_type="Музей", 
@@ -122,18 +122,18 @@ def test_should_succesfull_get_travels() -> None:
             travel_id=1,
             status="В процессе",
             users=None,
-            entertainments=[entertainment1, entertainment2],
-            accommodations=[accommodation1, accommodation2]
+            accommodations=[accommodation1, accommodation2],
+            entertainments=[entertainment1, entertainment2]
             ),
         Travel(
             travel_id=2,
             status="Завершен",
             users=None,
-            entertainments=[entertainment1, entertainment2],
-            accommodations=[accommodation1, accommodation2]
+            accommodations=[accommodation1, accommodation2],
+            entertainments=[entertainment1, entertainment2]
             )
     ]
-    with patch.object(TravelRepository, "values", return_value=travels, create=True) as mock_method:
+    with patch.object(TravelRepository, "get_list", return_value=travels, create=True) as mock_method:
         repository = TravelRepository()
         travel_service = TravelService(repository)
         travel_service.get_all_travels()
@@ -148,8 +148,8 @@ def test_service_should_throw_exception_at_get_not_existed_travel() -> None:
 
 
 def test_should_succesfull_update_existed_travel_by_id() -> None:
-    entertainment1 = Entertainment(
-        entertainment_id=1,
+    accommodation1 = Accommodation(
+        accommodation_id=1,
         cost=20000,
         address="Улица Гоголя, 12",
         name="Four Seasons",
@@ -159,8 +159,8 @@ def test_should_succesfull_update_existed_travel_by_id() -> None:
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
 
-    entertainment2 = Entertainment(
-        entertainment_id=1,
+    accommodation2 = Accommodation(
+        accommodation_id=1,
         cost=10000,
         address="Улица Гоголя, 15",
         name="Чайка",
@@ -169,15 +169,15 @@ def test_should_succesfull_update_existed_travel_by_id() -> None:
         entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
-    accommodation1 = Accommodation(
-        accommodation_id=1, 
+    entertainment1 = Entertainment(
+        entertainment_id=1, 
         duration="4 часа",
         location="главная площадь", 
         a_type="Концерт", 
         datetime=datetime(2023, 10, 10, 10, 0, 0) 
         )
-    accommodation2 = Accommodation(
-        accommodation_id=2, 
+    entertainment2 = Entertainment(
+        entertainment_id=2, 
         duration="4 часа",
         location="дворцовая площадь", 
         a_type="Музей", 
@@ -188,8 +188,8 @@ def test_should_succesfull_update_existed_travel_by_id() -> None:
         travel_id=1,
         status="В процессе",
         users=None,
-        entertainments=[entertainment1, entertainment2],
-        accommodations=[accommodation1, accommodation2]
+        accommodations=[accommodation1, accommodation2],
+        entertainments=[entertainment1, entertainment2]
     )
 
     with patch.object(TravelRepository, "update", return_value=travel, create=True) as mock_method:
@@ -200,8 +200,8 @@ def test_should_succesfull_update_existed_travel_by_id() -> None:
 
 
 def test_service_should_throw_exception_at_update_not_existed_travel() -> None:
-    entertainment1 = Entertainment(
-        entertainment_id=1,
+    accommodation1 = Accommodation(
+        accommodation_id=1,
         cost=20000,
         address="Улица Гоголя, 12",
         name="Four Seasons",
@@ -211,8 +211,8 @@ def test_service_should_throw_exception_at_update_not_existed_travel() -> None:
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
 
-    entertainment2 = Entertainment(
-        entertainment_id=1,
+    accommodation2 = Accommodation(
+        accommodation_id=1,
         cost=10000,
         address="Улица Гоголя, 15",
         name="Чайка",
@@ -221,15 +221,15 @@ def test_service_should_throw_exception_at_update_not_existed_travel() -> None:
         entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
         departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
     )
-    accommodation1 = Accommodation(
-        accommodation_id=1, 
+    entertainment1 = Entertainment(
+        entertainment_id=1, 
         duration="4 часа",
         location="главная площадь", 
         a_type="Концерт", 
         datetime=datetime(2023, 10, 10, 10, 0, 0)
         )
-    accommodation2 = Accommodation(
-        accommodation_id=2, 
+    entertainment2 = Entertainment(
+        entertainment_id=2, 
         duration="4 часа",
         location="дворцовая площадь", 
         a_type="Музей", 
@@ -240,8 +240,8 @@ def test_service_should_throw_exception_at_update_not_existed_travel() -> None:
         travel_id=1,
         status="В процессе",
         users=None,
-        entertainments=[entertainment1, entertainment2],
-        accommodations=[accommodation1, accommodation2]
+        accommodations=[accommodation1, accommodation2],
+        entertainments=[entertainment1, entertainment2]
     )
 
     repository = Mock(**{"update.side_effect": ValueError})

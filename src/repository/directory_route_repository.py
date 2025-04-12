@@ -57,25 +57,6 @@ class DirectoryRouteRepository(IDirectoryRouteRepository):
             print(f"Ошибка при получении справочника маршрутов по ID {directory_route_id}: {e}")
             return None
 
-    async def get_distance(self, from_city_id: int, to_city_id: int) -> int:
-        query = text("""
-            SELECT * FROM directory_route 
-            WHERE departure_city = :from_id AND arrival_city = :to_id
-        """)
-        try:
-            result = await self.session.execute(query, {
-                "from_id": from_city_id,
-                "to_id": to_city_id
-            })
-            result = result.mappings().first()
-            if result:
-                return result["distance"]
-            print(f"Маршрут {from_city_id} → {to_city_id} не найден в directory_route")
-            return 0
-        except SQLAlchemyError:
-            print("Ошибка при получении дистанции маршрута")
-            return 0
-
     async def add(self, directory_route: DirectoryRoute) -> None:
         if directory_route.departure_city is None or directory_route.destination_city is None:
             print("Ошибка: Отсутствуют данные о городах")

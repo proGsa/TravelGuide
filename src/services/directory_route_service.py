@@ -48,13 +48,6 @@ class DirectoryRouteService(IDirectoryRouteService):
         except (Exception):
             raise ValueError("Cпpaвoчник маршрутов не получилось удалить.")
 
-    async def get_by_cities(self, from_city_id: int, to_city_id: int) -> DirectoryRoute | None:
-        try:
-            return await self.repository.get_by_cities(from_city_id, to_city_id)
-        except (Exception):
-            raise ValueError("Cпpaвoчник маршрутов не найден.")
-        return None
-
     async def change_transport(self, d_route_id: int, transport: str, cost: int) -> None:
         try:
             await self.repository.change_transport(d_route_id, transport, cost)

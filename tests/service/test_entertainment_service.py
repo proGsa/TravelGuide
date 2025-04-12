@@ -24,19 +24,16 @@ def test_service_should_throw_exception_at_delete_not_existed_entertainment() ->
     entertainment_service = EntertainmentService(repository)
     with pytest.raises(ValueError):
         entertainment_service.delete(123)
-
+        
 
 def test_should_succesfull_get_existed_entertainment_by_id() -> None:
     entertainment = Entertainment(
-        entertainment_id=1,
-        cost=20000,
-        address="Улица Гоголя, 12",
-        name="Four Seasons",
-        e_type="Отель",
-        rating=5,
-        entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
-        departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
-    )
+        entertainment_id=1, 
+        duration="4 часа",
+        location="главная площадь", 
+        a_type="Концерт", 
+        datetime=datetime(2023, 10, 10, 10, 0, 0)
+        )
 
     with patch.object(EntertainmentRepository, "get", return_value=entertainment, create=True) as mock_method:
         repository = EntertainmentRepository()
@@ -54,15 +51,12 @@ def test_service_should_throw_exception_at_get_not_existed_entertainment() -> No
 
 def test_should_succesfull_update_existed_entertainment_by_id() -> None:
     entertainment = Entertainment(
-        entertainment_id=1,
-        cost=20000,
-        address="Улица Гоголя, 12",
-        name="Four Seasons",
-        e_type="Отель",
-        rating=5,
-        entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
-        departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
-    )
+        entertainment_id=1, 
+        duration="4 часа",
+        location="главная площадь", 
+        a_type="Концерт", 
+        datetime=datetime(2023, 10, 10, 10, 0, 0)
+        )
 
     with patch.object(EntertainmentRepository, "update", return_value=entertainment, create=True) as mock_method:
         repository = EntertainmentRepository()
@@ -73,15 +67,12 @@ def test_should_succesfull_update_existed_entertainment_by_id() -> None:
 
 def test_service_should_throw_exception_at_update_not_existed_entertainment() -> None:
     entertainment = Entertainment(
-        entertainment_id=1,
-        cost=20000,
-        address="Улица Гоголя, 12",
-        name="Four Seasons",
-        e_type="Отель",
-        rating=5,
-        entry_datetime=datetime(2023, 10, 10, 10, 0, 0),
-        departure_datetime=datetime(2023, 10, 10, 18, 0, 0)
-    )
+        entertainment_id=1, 
+        duration="4 часа",
+        location="главная площадь", 
+        a_type="Концерт", 
+        datetime=datetime(2023, 10, 10, 10, 0, 0)
+        )
     repository = Mock(**{"update.side_effect": ValueError})
     entertainment_service = EntertainmentService(repository)
     with pytest.raises(ValueError):

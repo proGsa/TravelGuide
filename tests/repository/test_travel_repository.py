@@ -30,13 +30,13 @@ metadata = MetaData(schema='test')
 
 travels = [{"status": "В процессе", "user_id": 1}, {"status": "Завершен", "user_id": 1}]
 
-entertainment_data = [
+accommodations_data = [
         {"price": 46840, "address": "Улица Гоголя, 12", "name": "Four Seasons", "type": "Отель", "rating": 5, 
                 "check_in": datetime(2025, 3, 29, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)},
         {"price": 7340, "address": "Улица Толстого, 134", "name": "Мир", "type": "Хостел", "rating": 4, 
                 "check_in": datetime(2025, 4, 2, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)}
     ]
-accommodations_data = [
+entertainment_data = [
         {"duration": "4 часа", "address": "Главная площадь", "event_name": "Концерт", 
                                             "event_time": datetime(2025, 4, 10, 16, 0, 0)},
         {"duration": "3 часа", "address": "ул. Кузнецова, 4", "event_name": "Выставка", 
@@ -61,11 +61,11 @@ async def event_loop() -> AsyncGenerator[asyncio.AbstractEventLoop]:
 async def db_session() -> AsyncGenerator[AsyncSession]:
     async with AsyncSessionMaker() as session:
         await session.execute(text("SET search_path TO test"))
-        await session.execute(text("TRUNCATE TABLE travel_entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE travel_accommodations RESTART IDENTITY CASCADE"))
-        await session.execute(text("TRUNCATE TABLE entertainment RESTART IDENTITY CASCADE"))
-        await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE travel_entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE accommodations RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE travel RESTART IDENTITY CASCADE"))
 
         await session.execute(text("""
@@ -74,29 +74,29 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
                 ('Лобач Анастасия Олеговна', '1111111111', '89261111111', 'nastya@lobach.info', 'user1', '123!e5T78')
             """))
 
-        for data in entertainment_data:
-            await session.execute(text("INSERT INTO entertainment (price, address, name, type, rating, check_in, \
-                 check_out) VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)"), data)
         for data in accommodations_data:
-            await session.execute(text("INSERT INTO accommodations (duration, address, event_name, event_time) \
+            await session.execute(text("INSERT INTO accommodations (price, address, name, type, rating, check_in, \
+                 check_out) VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)"), data)
+        for data in entertainment_data:
+            await session.execute(text("INSERT INTO entertainment (duration, address, event_name, event_time) \
                 VALUES (:duration, :address, :event_name, :event_time)"), data)
         for data in travels:
             await session.execute(text("INSERT INTO travel (status, user_id) \
                 VALUES (:status, :user_id)"), data)
         for t_a in tr_a:
             await session.execute(
-                    text("INSERT INTO travel_accommodations (travel_id, accommodation_id) \
-                        VALUES (:travel_id, :accommodation_id)"), 
+                    text("INSERT INTO travel_entertainment (travel_id, entertainment_id) \
+                        VALUES (:travel_id, :entertainment_id)"), 
                         {
                             "travel_id": t_a[0],
-                            "accommodation_id": t_a[1]
+                            "entertainment_id": t_a[1]
                         }
                 )
         for t_e in tr_ent:
             await session.execute(
-                    text("INSERT INTO travel_entertainment (travel_id, entertainment_id) \
-                        VALUES (:travel_id, :entertainment_id)"),
-                            {"travel_id": t_e[0], "entertainment_id": t_e[1]}
+                    text("INSERT INTO travel_accommodations (travel_id, accommodation_id) \
+                        VALUES (:travel_id, :accommodation_id)"),
+                            {"travel_id": t_e[0], "accommodation_id": t_e[1]}
                 )
         await session.commit()
         yield session  
@@ -105,19 +105,19 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_new_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     user = await user_repo.get_by_id(1)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     
-    en = [e for e in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if a is not None]
 
     assert acc is not None
     assert en is not None
 
     new_travel = Travel(travel_id=3, status="Завершен", 
-        users=user, entertainments=en, accommodations=acc)
+        users=user, accommodations=en, entertainments=acc)
 
     await travel_repo.add(new_travel)
 
@@ -129,39 +129,39 @@ async def test_add_new_travel(db_session: AsyncSession) -> None:
     assert user is not None
     assert travel[2] == user.user_id 
 
-    result_entertainment = await db_session.execute(
-        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 3}
-    )
-    travel_entertainment = result_entertainment.fetchall()
-    assert len(travel_entertainment) == EXPECTED_TWO
-    assert travel_entertainment[0][1:] == (3, 2)
-    assert travel_entertainment[1][1:] == (3, 1)
-
     result_accommodation = await db_session.execute(
         text("SELECT * FROM travel_accommodations WHERE travel_id = :travel_id"), {"travel_id": 3}
     )
     travel_accommodation = result_accommodation.fetchall()
     assert len(travel_accommodation) == EXPECTED_TWO
-    assert travel_accommodation[0][1:] == (3, 1)
-    assert travel_accommodation[1][1:] == (3, 2)
+    assert travel_accommodation[0][1:] == (3, 2)
+    assert travel_accommodation[1][1:] == (3, 1)
+
+    result_entertainment = await db_session.execute(
+        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 3}
+    )
+    travel_entertainment = result_entertainment.fetchall()
+    assert len(travel_entertainment) == EXPECTED_TWO
+    assert travel_entertainment[0][1:] == (3, 1)
+    assert travel_entertainment[1][1:] == (3, 2)
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     user = await user_repo.get_by_id(1)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
 
-    en = [e for e in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if a is not None]
 
     assert acc is not None
     assert en is not None
 
     existing_travel = Travel(travel_id=1, status="В процессе", 
-        users=user, entertainments=en, accommodations=acc)
+        users=user, accommodations=en, entertainments=acc)
 
     await travel_repo.add(existing_travel)
     
@@ -173,37 +173,37 @@ async def test_add_existing_travel(db_session: AsyncSession) -> None:
     assert travel[1] == "В процессе"
     assert user is not None
     assert travel[2] == user.user_id 
-    result_entertainment = await db_session.execute(
-        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
-    )
-    travel_entertainment = result_entertainment.fetchall()
-    assert len(travel_entertainment) == 1
-    assert travel_entertainment[0][1:] == (1, 2)
-
     result_accommodation = await db_session.execute(
         text("SELECT * FROM travel_accommodations WHERE travel_id = :travel_id"), {"travel_id": 1}
     )
     travel_accommodation = result_accommodation.fetchall()
     assert len(travel_accommodation) == 1
-    assert travel_accommodation[0][1:] == (1, 1)
+    assert travel_accommodation[0][1:] == (1, 2)
+
+    result_entertainment = await db_session.execute(
+        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
+    )
+    travel_entertainment = result_entertainment.fetchall()
+    assert len(travel_entertainment) == 1
+    assert travel_entertainment[0][1:] == (1, 1)
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     user = await user_repo.get_by_id(1)
 
-    en = [e for e in [await entertainment_repo.get_by_id(1)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(2)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(1)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(2)] if a is not None]
 
     assert acc is not None
     assert en is not None
 
     updated_travel = Travel(travel_id=1, status="В процессе", 
-        users=user, entertainments=en, accommodations=acc)
+        users=user, accommodations=en, entertainments=acc)
 
     await travel_repo.update(updated_travel)
     result = await db_session.execute(text("SELECT * FROM travel WHERE id = :id"), {"id": 1})
@@ -214,39 +214,39 @@ async def test_update_existing_travel(db_session: AsyncSession) -> None:
     assert user is not None
     assert travel[0] == user.user_id
 
-    result_entertainment = await db_session.execute(
-        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
-    )
-    travel_entertainment = result_entertainment.fetchall()
-    assert len(travel_entertainment) == 1
-    assert travel_entertainment[0][2] == 1
-
     result_accommodation = await db_session.execute(
         text("SELECT * FROM travel_accommodations WHERE travel_id = :travel_id"), {"travel_id": 1}
     )
     travel_accommodation = result_accommodation.fetchall()
     assert len(travel_accommodation) == 1
-    assert travel_accommodation[0][2] == EXPECTED_TWO
+    assert travel_accommodation[0][2] == 1
+
+    result_entertainment = await db_session.execute(
+        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
+    )
+    travel_entertainment = result_entertainment.fetchall()
+    assert len(travel_entertainment) == 1
+    assert travel_entertainment[0][2] == EXPECTED_TWO
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_not_existing_id(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     user = User(user_id=4, fio="Семенов Семен Семенович", number_passport="4444444444",
         phone_number="89267753309", email="sem@sss.com",
         login="user4", password="6669!g7T90")
     
-    en = [e for e in [await entertainment_repo.get_by_id(1)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(2)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(1)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(2)] if a is not None]
 
     assert acc is not None
     assert en is not None
 
     non_existing_travel = Travel(travel_id=999, status="В процессе", 
-        users=user, entertainments=en, accommodations=acc)
+        users=user, accommodations=en, entertainments=acc)
 
     await travel_repo.update(non_existing_travel)
     
@@ -259,8 +259,8 @@ async def test_update_not_existing_id(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_delete_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     
     await travel_repo.delete(1)
@@ -274,8 +274,8 @@ async def test_delete_existing_travel(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_delete_not_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     
     await travel_repo.delete(999)
@@ -289,8 +289,8 @@ async def test_delete_not_existing_travel(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_get_by_id_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     travel = await travel_repo.get_by_id(1)
 
@@ -303,8 +303,8 @@ async def test_get_by_id_existing_travel(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_get_by_id_not_existing_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     travel = await travel_repo.get_by_id(132)
 
@@ -314,8 +314,8 @@ async def test_get_by_id_not_existing_travel(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_get_list_travel(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     list_of_travels = await travel_repo.get_list()
 
@@ -324,28 +324,28 @@ async def test_get_list_travel(db_session: AsyncSession) -> None:
         assert travel.users is not None
         assert travel.users.user_id == expected["user_id"]
 
-        related_entertainments = travel.entertainments 
-        assert len(related_entertainments) == len([te for te in tr_ent if te[0] == travel.travel_id])
-
-        for _, entertainment in enumerate(related_entertainments):
-            expected_entertainment = entertainment_data[1] if travel.travel_id == 1 else entertainment_data[0]
-
-            assert entertainment.cost == expected_entertainment["price"]
-            assert entertainment.address == expected_entertainment["address"]
-            assert entertainment.name == expected_entertainment["name"]
-            assert entertainment.e_type == expected_entertainment["type"]
-            assert entertainment.rating == expected_entertainment["rating"]
-            assert entertainment.entry_datetime == expected_entertainment["check_in"]
-            assert entertainment.departure_datetime == expected_entertainment["check_out"]
-
-        related_accommodations = travel.accommodations
-        assert len(related_accommodations) == len([ta for ta in tr_a if ta[0] == travel.travel_id])
+        related_accommodations = travel.accommodations 
+        assert len(related_accommodations) == len([te for te in tr_ent if te[0] == travel.travel_id])
 
         for _, accommodation in enumerate(related_accommodations):
-            assert accommodation is not None, "Accommodation is None"
-            expected_accommodation = accommodations_data[0] if travel.travel_id == 1 else accommodations_data[1]
+            expected_accommodation = accommodations_data[1] if travel.travel_id == 1 else accommodations_data[0]
 
-            assert accommodation.duration == expected_accommodation["duration"]
-            assert accommodation.location == expected_accommodation["address"]
-            assert accommodation.a_type == expected_accommodation["event_name"]
-            assert accommodation.datetime == expected_accommodation["event_time"]
+            assert accommodation.cost == expected_accommodation["price"]
+            assert accommodation.address == expected_accommodation["address"]
+            assert accommodation.name == expected_accommodation["name"]
+            assert accommodation.e_type == expected_accommodation["type"]
+            assert accommodation.rating == expected_accommodation["rating"]
+            assert accommodation.entry_datetime == expected_accommodation["check_in"]
+            assert accommodation.departure_datetime == expected_accommodation["check_out"]
+
+        related_entertainments = travel.entertainments
+        assert len(related_entertainments) == len([ta for ta in tr_a if ta[0] == travel.travel_id])
+
+        for _, entertainment in enumerate(related_entertainments):
+            assert entertainment is not None, "Entertainment is None"
+            expected_entertainment = entertainment_data[0] if travel.travel_id == 1 else entertainment_data[1]
+
+            assert entertainment.duration == expected_entertainment["duration"]
+            assert entertainment.location == expected_entertainment["address"]
+            assert entertainment.a_type == expected_entertainment["event_name"]
+            assert entertainment.datetime == expected_entertainment["event_time"]

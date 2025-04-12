@@ -65,8 +65,8 @@
 ## Технологический стек
 
 * *Тип приложения* - Web MPA  
-* *backend* - Python / C#
-* *frontend* - Python / C#
+* *backend* - Python
+* *frontend* - Python
 * *database* - PostgreSQL  
 
 ## Верхнеуровневое разбиение на компоненты

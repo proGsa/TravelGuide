@@ -63,13 +63,6 @@ class RouteService(IRouteService):
         except (Exception):
             raise ValueError("Город не получилось добавить.")
 
-    async def get_routes_by_city(self, city_id: int) -> list[Route]:
-        try:
-            return await self.repository.get_routes_by_city(city_id)
-        except (Exception):
-            raise ValueError("Маршруты не найдены.")
-        return []
-
     async def delete_city_from_route(self, city_id: int) -> None:
         try:
             await self.repository.delete_city_from_route(city_id)

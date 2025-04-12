@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from abstract_service.travel_service import ITravelService
+from models.accommodation import Accommodation
+from models.entertainment import Entertainment
 from models.travel import Travel
 from repository.travel_repository import TravelRepository
 
@@ -72,12 +74,24 @@ class TravelService(ITravelService):
     
     async def complete(self, travel_id: int) -> None:
         try:
-            return await self.repository.complete(travel_id)
+            await self.repository.complete(travel_id)
         except (Exception):
             raise ValueError("Ошибка при завершении путешествия")
 
     async def check_archive(self) -> list[Travel]:
         try:
             return await self.repository.check_archive()
+        except (Exception):
+            raise ValueError("Ошибка при получении завершенных путешествий")
+
+    async def get_entertainments_by_travel(self, travel_id: int) -> list[Entertainment]:
+        try:
+            return await self.repository.get_entertainments_by_travel(travel_id)
+        except (Exception):
+            raise ValueError("Ошибка при получении завершенных путешествий")
+
+    async def get_accommodations_by_travel(self, travel_id: int) -> list[Accommodation]:
+        try:
+            return await self.repository.get_accommodations_by_travel(travel_id)
         except (Exception):
             raise ValueError("Ошибка при получении завершенных путешествий")

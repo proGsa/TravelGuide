@@ -35,13 +35,13 @@ metadata = MetaData(schema='test')
 
 travels = [{"status": "В процессе", "user_id": 1}, {"status": "Завершен", "user_id": 1}]
 
-entertainment_data = [
+accommodations_data = [
         {"price": 46840, "address": "Улица Гоголя, 12", "name": "Four Seasons", "type": "Отель", "rating": 5, 
                 "check_in": datetime(2025, 3, 29, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)},
         {"price": 7340, "address": "Улица Толстого, 134", "name": "Мир", "type": "Хостел", "rating": 4, 
                 "check_in": datetime(2025, 4, 2, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)}
     ]
-accommodations_data = [
+entertainment_data = [
         {"duration": "4 часа", "address": "Главная площадь", "event_name": "Концерт", 
                                             "event_time": datetime(2025, 4, 10, 16, 0, 0)},
         {"duration": "3 часа", "address": "ул. Кузнецова, 4", "event_name": "Выставка", 
@@ -64,12 +64,45 @@ d_routes = [
         {"type_transport": "Поезд", "departure_city": 5, "arrival_city": 4, "distance": 3025, "price": 5988},
         {"type_transport": "Паром", "departure_city": 1, "arrival_city": 2, "distance": 515, "price": 13987},
         {"type_transport": "Самолет", "departure_city": 1, "arrival_city": 2, "distance": 467, "price": 2223},
-        {"type_transport": "Поезд", "departure_city": 1, "arrival_city": 2, "distance": 515, "price": 1911}
+        {"type_transport": "Поезд", "departure_city": 1, "arrival_city": 2, "distance": 515, "price": 1911},
+        {"type_transport": "Самолет", "departure_city": 1, "arrival_city": 4, "distance": 1780, "price": 7500},
+        {"type_transport": "Поезд", "departure_city": 1, "arrival_city": 4, "distance": 1780, "price": 3500},
+        {"type_transport": "Автобус", "departure_city": 1, "arrival_city": 4, "distance": 1780, "price": 3200},
+        {"type_transport": "Самолет", "departure_city": 1, "arrival_city": 3, "distance": 700, "price": 3200},
+        {"type_transport": "Поезд", "departure_city": 1, "arrival_city": 3, "distance": 700, "price": 1800},
+        {"type_transport": "Автобус", "departure_city": 1, "arrival_city": 3, "distance": 700, "price": 1600},
+        {"type_transport": "Самолет", "departure_city": 1, "arrival_city": 5, "distance": 1280, "price": 6200},
+        {"type_transport": "Поезд", "departure_city": 1, "arrival_city": 5, "distance": 1280, "price": 3100},
+        {"type_transport": "Автобус", "departure_city": 1, "arrival_city": 5, "distance": 1280, "price": 2800},
+
+        {"type_transport": "Паром", "departure_city": 5, "arrival_city": 3, "distance": 966, "price": 3987},
+        {"type_transport": "Самолет", "departure_city": 5, "arrival_city": 3, "distance": 966, "price": 5123},
+        {"type_transport": "Поезд", "departure_city": 5, "arrival_city": 3, "distance": 966, "price": 2541},
+        {"type_transport": "Автобус", "departure_city": 5, "arrival_city": 3, "distance": 966, "price": 4756},
+        {"type_transport": "Самолет", "departure_city": 4, "arrival_city": 3, "distance": 1840, "price": 8322},
+        {"type_transport": "Поезд", "departure_city": 4, "arrival_city": 3, "distance": 1840, "price": 4305},
+        {"type_transport": "Автобус", "departure_city": 4, "arrival_city": 3, "distance": 1840, "price": 3796},
+        {"type_transport": "Самолет", "departure_city": 4, "arrival_city": 5, "distance": 3025, "price": 10650},
+        {"type_transport": "Поезд", "departure_city": 4, "arrival_city": 5, "distance": 3025, "price": 5988},
+        {"type_transport": "Паром", "departure_city": 2, "arrival_city": 1, "distance": 515, "price": 13987},
+        {"type_transport": "Самолет", "departure_city": 2, "arrival_city": 1, "distance": 467, "price": 2223},
+        {"type_transport": "Поезд", "departure_city": 2, "arrival_city": 1, "distance": 515, "price": 1911},
+        {"type_transport": "Самолет", "departure_city": 4, "arrival_city": 1, "distance": 1780, "price": 7500},
+        {"type_transport": "Поезд", "departure_city": 4, "arrival_city": 1, "distance": 1780, "price": 3500},
+        {"type_transport": "Автобус", "departure_city": 4, "arrival_city": 1, "distance": 1780, "price": 3200},
+        {"type_transport": "Самолет", "departure_city": 3, "arrival_city": 1, "distance": 700, "price": 3200},
+        {"type_transport": "Поезд", "departure_city": 3, "arrival_city": 1, "distance": 700, "price": 1800},
+        {"type_transport": "Автобус", "departure_city": 3, "arrival_city": 1, "distance": 700, "price": 1600},
+        {"type_transport": "Самолет", "departure_city": 5, "arrival_city": 1, "distance": 1280, "price": 6200},
+        {"type_transport": "Поезд", "departure_city": 5, "arrival_city": 1, "distance": 1280, "price": 3100},
+        {"type_transport": "Автобус", "departure_city": 5, "arrival_city": 1, "distance": 1280, "price": 2800}
     ]
 
 route = [
     {"d_route_id": 1, "travel_id": 1, "start_time": datetime(2025, 4, 2, 7, 30, 0),
                                      "end_time": datetime(2025, 4, 6, 7, 0, 0)}, 
+    {"d_route_id": 9, "travel_id": 1, "start_time": datetime(2025, 4, 3, 7, 30, 0),
+                                     "end_time": datetime(2025, 4, 6, 7, 0, 0)},
     {"d_route_id": 11, "travel_id": 2, "start_time": datetime(2025, 3, 29, 6, 50, 0), 
                                         "end_time": datetime(2025, 4, 5, 22, 45, 0)}
 ]
@@ -86,11 +119,11 @@ async def event_loop() -> AsyncGenerator[asyncio.AbstractEventLoop]:
 async def db_session() -> AsyncGenerator[AsyncSession]:
     async with AsyncSessionMaker() as session:
         await session.execute(text("SET search_path TO test"))
-        await session.execute(text("TRUNCATE TABLE travel_entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE travel_accommodations RESTART IDENTITY CASCADE"))
-        await session.execute(text("TRUNCATE TABLE entertainment RESTART IDENTITY CASCADE"))
-        await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE travel_entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE accommodations RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+        await session.execute(text("TRUNCATE TABLE entertainment RESTART IDENTITY CASCADE"))
         await session.execute(text("TRUNCATE TABLE travel RESTART IDENTITY CASCADE"))
 
         await session.execute(text("TRUNCATE TABLE city RESTART IDENTITY CASCADE"))
@@ -103,29 +136,29 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
                 ('Лобач Анастасия Олеговна', '1111111111', '89261111111', 'nastya@lobach.info', 'user1', '123!e5T78')
             """))
 
-        for data in entertainment_data:
-            await session.execute(text("INSERT INTO entertainment (price, address, name, type, rating, check_in, \
-                 check_out) VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)"), data)
         for data in accommodations_data:
-            await session.execute(text("INSERT INTO accommodations (duration, address, event_name, event_time) \
+            await session.execute(text("INSERT INTO accommodations (price, address, name, type, rating, check_in, \
+                 check_out) VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)"), data)
+        for data in entertainment_data:
+            await session.execute(text("INSERT INTO entertainment (duration, address, event_name, event_time) \
                 VALUES (:duration, :address, :event_name, :event_time)"), data)
         for data in travels:
             await session.execute(text("INSERT INTO travel (status, user_id) \
                 VALUES (:status, :user_id)"), data)
         for t_a in tr_a:
             await session.execute(
-                    text("INSERT INTO travel_accommodations (travel_id, accommodation_id) \
-                        VALUES (:travel_id, :accommodation_id)"), 
+                    text("INSERT INTO travel_entertainment (travel_id, entertainment_id) \
+                        VALUES (:travel_id, :entertainment_id)"), 
                         {
                             "travel_id": t_a[0],
-                            "accommodation_id": t_a[1]
+                            "entertainment_id": t_a[1]
                         }
                 )
         for t_e in tr_ent:
             await session.execute(
-                    text("INSERT INTO travel_entertainment (travel_id, entertainment_id) \
-                        VALUES (:travel_id, :entertainment_id)"),
-                            {"travel_id": t_e[0], "entertainment_id": t_e[1]}
+                    text("INSERT INTO travel_accommodations (travel_id, accommodation_id) \
+                        VALUES (:travel_id, :accommodation_id)"),
+                            {"travel_id": t_e[0], "accommodation_id": t_e[1]}
                 )
         await session.execute(text("INSERT INTO city (name) VALUES ('Москва'), \
                         ('Воронеж'), ('Санкт-Петербург'), ('Екатеринбург'), ('Калининград')"))
@@ -153,8 +186,8 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
 @pytest.mark.asyncio
 async def test_add_new_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -167,8 +200,8 @@ async def test_add_new_route(db_session: AsyncSession) -> None:
         departure_city=City(city_id=3, name='Санкт-Петербург'),
         destination_city=City(city_id=5, name='Калининград')
     )
-    en = [e for e in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None]
 
     assert acc is not None
     assert en is not None
@@ -177,8 +210,8 @@ async def test_add_new_route(db_session: AsyncSession) -> None:
         travel_id=2,
         status="Завершен",
         users=await user_repo.get_by_id(1),
-        entertainments=en,
-        accommodations=acc
+        accommodations=en,
+        entertainments=acc
     )
 
     new_route = Route(
@@ -208,49 +241,49 @@ async def test_add_new_route(db_session: AsyncSession) -> None:
     assert travel is not None
     assert travel[0] == new_route.travels.status
 
-    expected_entertainments = [
-        e for e in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if e is not None]
-    travel_entertainments = list(new_route.travels.entertainments)
-    assert len(travel_entertainments) == len(expected_entertainments)
-    for entertainment in travel_entertainments:
-        expected_entertainment = next(
-        (e for e in expected_entertainments if e.entertainment_id == entertainment.entertainment_id),
-        None
-        )
-        assert expected_entertainment is not None
-        assert entertainment.cost == expected_entertainment.cost
-        assert entertainment.address == expected_entertainment.address
-        assert entertainment.name == expected_entertainment.name
-        assert entertainment.e_type == expected_entertainment.e_type
-        assert entertainment.rating == expected_entertainment.rating
-        assert entertainment.entry_datetime == expected_entertainment.entry_datetime
-        assert entertainment.departure_datetime == expected_entertainment.departure_datetime
-
     expected_accommodations = [
-        a for a in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if a is not None]
+        e for e in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if e is not None]
     travel_accommodations = list(new_route.travels.accommodations)
     assert len(travel_accommodations) == len(expected_accommodations)
     for accommodation in travel_accommodations:
-        assert accommodation is not None
-        
         expected_accommodation = next(
-            (a for a in expected_accommodations if a.accommodation_id == accommodation.accommodation_id),
+        (e for e in expected_accommodations if e.accommodation_id == accommodation.accommodation_id),
+        None
+        )
+        assert expected_accommodation is not None
+        assert accommodation.cost == expected_accommodation.cost
+        assert accommodation.address == expected_accommodation.address
+        assert accommodation.name == expected_accommodation.name
+        assert accommodation.e_type == expected_accommodation.e_type
+        assert accommodation.rating == expected_accommodation.rating
+        assert accommodation.entry_datetime == expected_accommodation.entry_datetime
+        assert accommodation.departure_datetime == expected_accommodation.departure_datetime
+
+    expected_entertainments = [
+        a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None]
+    travel_entertainments = list(new_route.travels.entertainments)
+    assert len(travel_entertainments) == len(expected_entertainments)
+    for entertainment in travel_entertainments:
+        assert entertainment is not None
+        
+        expected_entertainment = next(
+            (a for a in expected_entertainments if a.entertainment_id == entertainment.entertainment_id),
             None
         )
         
-        assert expected_accommodation is not None
+        assert expected_entertainment is not None
 
-        assert accommodation.duration == expected_accommodation.duration
-        assert accommodation.location == expected_accommodation.location
-        assert accommodation.a_type == expected_accommodation.a_type
-        assert accommodation.datetime == expected_accommodation.datetime
+        assert entertainment.duration == expected_entertainment.duration
+        assert entertainment.location == expected_entertainment.location
+        assert entertainment.a_type == expected_entertainment.a_type
+        assert entertainment.datetime == expected_entertainment.datetime
     
 
 @pytest.mark.asyncio
 async def test_add_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -263,8 +296,8 @@ async def test_add_existing_route(db_session: AsyncSession) -> None:
         departure_city=City(city_id=3, name='Санкт-Петербург'),
         destination_city=City(city_id=5, name='Калининград')
     )
-    en = [e for e in [await entertainment_repo.get_by_id(2)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(1)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(2)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(1)] if a is not None]
 
     assert acc is not None
     assert en is not None
@@ -273,8 +306,8 @@ async def test_add_existing_route(db_session: AsyncSession) -> None:
         travel_id=1,
         status="В процессе",
         users=await user_repo.get_by_id(1),
-        entertainments=en,
-        accommodations=acc
+        accommodations=en,
+        entertainments=acc
     )
 
     existing_route = Route(
@@ -305,34 +338,34 @@ async def test_add_existing_route(db_session: AsyncSession) -> None:
     
     assert travel[0] == existing_route.travels.status
 
-    expected_entertainments = await entertainment_repo.get_by_id(2)
-    travel_entertainments = existing_route.travels.entertainments[0]
-    assert travel_entertainments is not None
-    assert expected_entertainments is not None
-    assert travel_entertainments.cost == expected_entertainments.cost
-    assert travel_entertainments.address == expected_entertainments.address
-    assert travel_entertainments.name == expected_entertainments.name
-    assert travel_entertainments.e_type == expected_entertainments.e_type
-    assert travel_entertainments.rating == expected_entertainments.rating
-    assert travel_entertainments.entry_datetime == expected_entertainments.entry_datetime
-    assert travel_entertainments.departure_datetime == expected_entertainments.departure_datetime
-
-    expected_accommodations = await accommodation_repo.get_by_id(1)
-    travel_accommodations = existing_route.travels.accommodations
-
+    expected_accommodations = await accommodation_repo.get_by_id(2)
+    travel_accommodations = existing_route.travels.accommodations[0]
     assert travel_accommodations is not None
     assert expected_accommodations is not None
-    assert travel_accommodations[0].duration == expected_accommodations.duration
-    assert travel_accommodations[0].location == expected_accommodations.location
-    assert travel_accommodations[0].a_type == expected_accommodations.a_type
-    assert travel_accommodations[0].datetime == expected_accommodations.datetime
+    assert travel_accommodations.cost == expected_accommodations.cost
+    assert travel_accommodations.address == expected_accommodations.address
+    assert travel_accommodations.name == expected_accommodations.name
+    assert travel_accommodations.e_type == expected_accommodations.e_type
+    assert travel_accommodations.rating == expected_accommodations.rating
+    assert travel_accommodations.entry_datetime == expected_accommodations.entry_datetime
+    assert travel_accommodations.departure_datetime == expected_accommodations.departure_datetime
+
+    expected_entertainments = await entertainment_repo.get_by_id(1)
+    travel_entertainments = existing_route.travels.entertainments
+
+    assert travel_entertainments is not None
+    assert expected_entertainments is not None
+    assert travel_entertainments[0].duration == expected_entertainments.duration
+    assert travel_entertainments[0].location == expected_entertainments.location
+    assert travel_entertainments[0].a_type == expected_entertainments.a_type
+    assert travel_entertainments[0].datetime == expected_entertainments.datetime
 
 
 @pytest.mark.asyncio
 async def test_update_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -346,8 +379,8 @@ async def test_update_existing_route(db_session: AsyncSession) -> None:
         destination_city=City(city_id=5, name='Калининград')
     )
     
-    en = [e for e in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None]
 
     assert acc is not None
     assert en is not None
@@ -356,8 +389,8 @@ async def test_update_existing_route(db_session: AsyncSession) -> None:
         travel_id=2,
         status="Завершен",
         users=await user_repo.get_by_id(1),
-        entertainments=en,
-        accommodations=acc
+        accommodations=en,
+        entertainments=acc
     )
 
     updated_route = Route(
@@ -387,50 +420,50 @@ async def test_update_existing_route(db_session: AsyncSession) -> None:
     assert travel is not None
     assert travel[0] == updated_route.travels.status
 
-    expected_entertainments = [
-            e for e in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if e is not None]
-    travel_entertainments = list(updated_route.travels.entertainments)
-    assert len(travel_entertainments) == len(expected_entertainments)
-    for entertainment in travel_entertainments:
-        expected_entertainment = next(
-        (e for e in expected_entertainments if e.entertainment_id == entertainment.entertainment_id),
-            None
-        )
-        assert expected_entertainment is not None
-        assert entertainment.cost == expected_entertainment.cost
-        assert entertainment.address == expected_entertainment.address
-        assert entertainment.name == expected_entertainment.name
-        assert entertainment.e_type == expected_entertainment.e_type
-        assert entertainment.rating == expected_entertainment.rating
-        assert entertainment.entry_datetime == expected_entertainment.entry_datetime
-        assert entertainment.departure_datetime == expected_entertainment.departure_datetime
-
     expected_accommodations = [
-        a for a in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if a is not None
-    ]
-    
+            e for e in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if e is not None]
     travel_accommodations = list(updated_route.travels.accommodations)
     assert len(travel_accommodations) == len(expected_accommodations)
     for accommodation in travel_accommodations:
-        assert accommodation is not None
         expected_accommodation = next(
-            (a for a in expected_accommodations if a.accommodation_id == accommodation.accommodation_id),
+        (e for e in expected_accommodations if e.accommodation_id == accommodation.accommodation_id),
+            None
+        )
+        assert expected_accommodation is not None
+        assert accommodation.cost == expected_accommodation.cost
+        assert accommodation.address == expected_accommodation.address
+        assert accommodation.name == expected_accommodation.name
+        assert accommodation.e_type == expected_accommodation.e_type
+        assert accommodation.rating == expected_accommodation.rating
+        assert accommodation.entry_datetime == expected_accommodation.entry_datetime
+        assert accommodation.departure_datetime == expected_accommodation.departure_datetime
+
+    expected_entertainments = [
+        a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None
+    ]
+    
+    travel_entertainments = list(updated_route.travels.entertainments)
+    assert len(travel_entertainments) == len(expected_entertainments)
+    for entertainment in travel_entertainments:
+        assert entertainment is not None
+        expected_entertainment = next(
+            (a for a in expected_entertainments if a.entertainment_id == entertainment.entertainment_id),
             None
         )
         
-        assert expected_accommodation is not None
+        assert expected_entertainment is not None
 
-        assert accommodation.duration == expected_accommodation.duration
-        assert accommodation.location == expected_accommodation.location
-        assert accommodation.a_type == expected_accommodation.a_type
-        assert accommodation.datetime == expected_accommodation.datetime
+        assert entertainment.duration == expected_entertainment.duration
+        assert entertainment.location == expected_entertainment.location
+        assert entertainment.a_type == expected_entertainment.a_type
+        assert entertainment.datetime == expected_entertainment.datetime
 
 
 @pytest.mark.asyncio
 async def test_update_not_existing_id(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -445,8 +478,8 @@ async def test_update_not_existing_id(db_session: AsyncSession) -> None:
         destination_city=City(city_id=5, name='Калининград')
     )
 
-    en = [e for e in [await entertainment_repo.get_by_id(1), await entertainment_repo.get_by_id(2)] if e is not None]
-    acc = [a for a in [await accommodation_repo.get_by_id(2), await accommodation_repo.get_by_id(1)] if a is not None]
+    en = [e for e in [await accommodation_repo.get_by_id(1), await accommodation_repo.get_by_id(2)] if e is not None]
+    acc = [a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None]
 
     assert acc is not None
     assert en is not None
@@ -455,8 +488,8 @@ async def test_update_not_existing_id(db_session: AsyncSession) -> None:
         travel_id=2,
         status="Завершен",
         users=await user_repo.get_by_id(1),
-        entertainments=en,
-        accommodations=acc
+        accommodations=en,
+        entertainments=acc
     )
 
     non_existing_route = Route(
@@ -478,8 +511,8 @@ async def test_update_not_existing_id(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio
 async def test_delete_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -496,8 +529,8 @@ async def test_delete_existing_route(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio
 async def test_delete_not_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -514,8 +547,8 @@ async def test_delete_not_existing_route(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio
 async def test_get_by_id_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -532,26 +565,26 @@ async def test_get_by_id_existing_route(db_session: AsyncSession) -> None:
     assert route.travels.status == "В процессе"
     assert route.travels.users is not None
     assert route.travels.users.user_id == 1
-    result_entertainment = await db_session.execute(
-        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
-    )
-    travel_entertainment = result_entertainment.fetchall()
-    assert len(travel_entertainment) == 1
-    assert travel_entertainment[0][1:] == (1, 2)
-
     result_accommodation = await db_session.execute(
         text("SELECT * FROM travel_accommodations WHERE travel_id = :travel_id"), {"travel_id": 1}
     )
     travel_accommodation = result_accommodation.fetchall()
     assert len(travel_accommodation) == 1
-    assert travel_accommodation[0][1:] == (1, 1)
+    assert travel_accommodation[0][1:] == (1, 2)
+
+    result_entertainment = await db_session.execute(
+        text("SELECT * FROM travel_entertainment WHERE travel_id = :travel_id"), {"travel_id": 1}
+    )
+    travel_entertainment = result_entertainment.fetchall()
+    assert len(travel_entertainment) == 1
+    assert travel_entertainment[0][1:] == (1, 1)
 
 
 @pytest.mark.asyncio
 async def test_get_by_id_not_existing_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -564,8 +597,8 @@ async def test_get_by_id_not_existing_route(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio
 async def test_get_list_route(db_session: AsyncSession) -> None:
     user_repo = UserRepository(db_session)
-    entertainment_repo = EntertainmentRepository(db_session)
     accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
     travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
     city_repo = CityRepository(db_session)
     d_repo = DirectoryRouteRepository(db_session, city_repo)
@@ -608,29 +641,102 @@ async def test_get_list_route(db_session: AsyncSession) -> None:
         assert r.travels.users is not None
         assert r.travels.users.user_id == expected_travel["user_id"]
 
-        related_entertainments = r.travels.entertainments
-        expected_entertainments = [te for te in tr_ent if te[0] == r.travels.travel_id]
-        assert len(related_entertainments) == len(expected_entertainments)
-        for entertainment in related_entertainments:
-            expected_entertainment = entertainment_data[1] if r.travels.travel_id == 1 else entertainment_data[0]
-
-            assert entertainment.cost == expected_entertainment["price"]
-            assert entertainment.address == expected_entertainment["address"]
-            assert entertainment.name == expected_entertainment["name"]
-            assert entertainment.e_type == expected_entertainment["type"]
-            assert entertainment.rating == expected_entertainment["rating"]
-            assert entertainment.entry_datetime == expected_entertainment["check_in"]
-            assert entertainment.departure_datetime == expected_entertainment["check_out"]
-
         related_accommodations = r.travels.accommodations
-        expected_accommodations = [ta for ta in tr_a if ta[0] == r.travels.travel_id]
+        expected_accommodations = [te for te in tr_ent if te[0] == r.travels.travel_id]
         assert len(related_accommodations) == len(expected_accommodations)
-
         for accommodation in related_accommodations:
-            assert accommodation is not None, "Accommodation is None"
-            expected_accommodation = accommodations_data[0] if r.travels.travel_id == 1 else accommodations_data[1]
+            expected_accommodation = accommodations_data[1] if r.travels.travel_id == 1 else accommodations_data[0]
 
-            assert accommodation.duration == expected_accommodation["duration"]
-            assert accommodation.location == expected_accommodation["address"]
-            assert accommodation.a_type == expected_accommodation["event_name"]
-            assert accommodation.datetime == expected_accommodation["event_time"]
+            assert accommodation.cost == expected_accommodation["price"]
+            assert accommodation.address == expected_accommodation["address"]
+            assert accommodation.name == expected_accommodation["name"]
+            assert accommodation.e_type == expected_accommodation["type"]
+            assert accommodation.rating == expected_accommodation["rating"]
+            assert accommodation.entry_datetime == expected_accommodation["check_in"]
+            assert accommodation.departure_datetime == expected_accommodation["check_out"]
+
+        related_entertainments = r.travels.entertainments
+        expected_entertainments = [ta for ta in tr_a if ta[0] == r.travels.travel_id]
+        assert len(related_entertainments) == len(expected_entertainments)
+
+        for entertainment in related_entertainments:
+            assert entertainment is not None, "Entertainment is None"
+            expected_entertainment = entertainment_data[0] if r.travels.travel_id == 1 else entertainment_data[1]
+
+            assert entertainment.duration == expected_entertainment["duration"]
+            assert entertainment.location == expected_entertainment["address"]
+            assert entertainment.a_type == expected_entertainment["event_name"]
+            assert entertainment.datetime == expected_entertainment["event_time"]
+
+@pytest.mark.asyncio
+async def test_get_routes_by_travel_id_ordered(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
+    accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
+    travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
+    city_repo = CityRepository(db_session)
+    d_repo = DirectoryRouteRepository(db_session, city_repo)
+    route_repo = RouteRepository(db_session, d_repo, travel_repo)
+    result = await route_repo.get_routes_by_travel_id_ordered(1)
+
+    assert len(result) == 2
+    assert result[0].start_time < result[1].start_time
+
+@pytest.mark.asyncio
+async def test_insert_city_into_route(db_session: AsyncSession):
+    user_repo = UserRepository(db_session)
+    accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
+    travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
+    city_repo = CityRepository(db_session)
+    d_repo = DirectoryRouteRepository(db_session, city_repo)
+    route_repo = RouteRepository(db_session, d_repo, travel_repo)
+
+    initial_routes = await route_repo.get_routes_by_travel_id_ordered(1)
+    assert len(initial_routes) == 2
+    old_route_ids = [r.route_id for r in initial_routes]
+    print("initial_routes: ")
+    for route in initial_routes:
+        print(f"Route: {route.route_id}, {route.d_route.departure_city.city_id} -> {route.d_route.destination_city.city_id}")
+
+
+    new_city_id = 1
+    await route_repo.insert_city_between(travel_id=1, new_city_id=new_city_id, from_city_id = 3, to_city_id = 5)
+
+    updated_routes = await route_repo.get_routes_by_travel_id_ordered(1)
+    print("updated_routes: ")
+    for route in updated_routes:
+        print(f"Route: {route.route_id}, {route.d_route.departure_city.city_id} -> {route.d_route.destination_city.city_id}")
+
+    assert len(updated_routes) == 3
+
+    updated_route_ids = [r.route_id for r in updated_routes]
+    assert any(rid not in updated_route_ids for rid in old_route_ids)
+
+    cities_chain = [r.d_route.departure_city.city_id for r in updated_routes]
+    cities_chain.append(updated_routes[-1].d_route.destination_city.city_id)
+    assert new_city_id in cities_chain
+
+@pytest.mark.asyncio
+async def test_delete_city_from_route(db_session: AsyncSession) -> None:
+    user_repo = UserRepository(db_session)
+    accommodation_repo = AccommodationRepository(db_session)
+    entertainment_repo = EntertainmentRepository(db_session)
+    travel_repo = TravelRepository(db_session, user_repo, entertainment_repo, accommodation_repo)
+    city_repo = CityRepository(db_session)
+    d_repo = DirectoryRouteRepository(db_session, city_repo)
+    route_repo = RouteRepository(db_session, d_repo, travel_repo)
+
+    city_to_delete = await city_repo.get_by_id(1)
+    
+    assert city_to_delete is not None
+    
+    routes_before = await route_repo.get_routes_by_city(1)
+
+    await route_repo.delete_city_from_route(1)
+
+    city_after = await city_repo.get_by_id(1)
+    assert city_after is None
+
+    routes_after = await route_repo.get_routes_by_city(1)
+    assert len(routes_after) == 0

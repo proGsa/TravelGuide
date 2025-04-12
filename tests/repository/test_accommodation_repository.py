@@ -24,11 +24,11 @@ AsyncSessionMaker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=F
 
 metadata = MetaData(schema='test')
 
-accommodations_data = [
-        {"duration": "4 часа", "address": "Главная площадь", "event_name": "Концерт", 
-                                            "event_time": datetime(2025, 4, 10, 16, 0, 0)},
-        {"duration": "3 часа", "address": "ул. Кузнецова, 4", "event_name": "Выставка", 
-                                            "event_time": datetime(2025, 4, 5, 10, 0, 0)}
+accommodation_data = [
+        {"price": 46840, "address": "Улица Гоголя, 12", "name": "Four Seasons", "type": "Отель", "rating": 5, 
+                "check_in": datetime(2025, 3, 29, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)},
+        {"price": 7340, "address": "Улица Толстого, 134", "name": "Мир", "type": "Хостел", "rating": 4, 
+                "check_in": datetime(2025, 4, 2, 12, 30, 0), "check_out": datetime(2025, 4, 5, 18, 0, 0)}
     ]
 
 
@@ -44,63 +44,67 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
     async with AsyncSessionMaker() as session:
         await session.execute(text("SET search_path TO test"))
         await session.execute(text("TRUNCATE TABLE accommodations RESTART IDENTITY CASCADE"))
-        for data in accommodations_data:
-            await session.execute(text("INSERT INTO accommodations (duration, address, event_name, event_time) \
-            VALUES (:duration, :address, :event_name, :event_time)"), data)
-        await session.commit()
+        for data in accommodation_data:
+            await session.execute(text("INSERT INTO accommodations (price, address, name, type, rating, check_in, \
+                check_out) VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)"), data)
         yield session  
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_new_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    new_accommodation = Accommodation(accommodation_id=3, duration="2 часа", location="Красная площадь", 
-                                            a_type="Музей", datetime=datetime(2025, 4, 2, 14, 0, 0))
+    new_accommodation = Accommodation(accommodation_id=3, cost=33450, address="ул. Дмитриевского, 7",
+            name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
+                                departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
 
     await accommodation_repo.add(new_accommodation)
 
     result = await db_session.execute(text("SELECT * FROM accommodations ORDER BY id DESC LIMIT 1"))
     accommodation = result.mappings().first() 
-    assert accommodation["address"] == "Красная площадь"
+    assert accommodation["name"] == "ABC"
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_existing_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    existing_accommodation = Accommodation(accommodation_id=1, duration="4 часа", location="Главная площадь",
-                                            a_type="Концерт", datetime=datetime(2025, 4, 10, 16, 0, 0))
-    
+    existing_accommodation = Accommodation(accommodation_id=3, cost=46840, address="Улица Гоголя", name="Four Seasons", 
+                            e_type="Отель", rating=5, entry_datetime=datetime(2025, 3, 29, 12, 30, 0), 
+                                    departure_datetime=datetime(2025, 4, 5, 18, 0, 0))
+
     await accommodation_repo.add(existing_accommodation)
     
-    result = await db_session.execute(text("SELECT * FROM accommodations WHERE duration = :duration"), 
-                                                                {"duration": "4 часа"})
+    result = await db_session.execute(text("SELECT * FROM accommodations WHERE type = :type"), 
+                                                                {"type": "Отель"})
     accommodation = result.fetchone()
     
     assert accommodation is not None
-    assert accommodation[2] == "Главная площадь"
+    assert accommodation[4] == "Отель"
 
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_existing_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
     
-    updated_accommodation = Accommodation(accommodation_id=1, duration="2 часа", location="Главная площадь",
-                                            a_type="Фестиваль", datetime=datetime(2025, 4, 2, 14, 0, 0))
+    updated_accommodation = Accommodation(accommodation_id=1, cost=33450, address="ул. Дмитриевского, 7", 
+                name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
+                            departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
+
     await accommodation_repo.update(updated_accommodation)
 
     result = await db_session.execute(text("SELECT * FROM accommodations WHERE id = :id"), {"id": 1})
     accommodation = result.fetchone()
 
     assert accommodation is not None
-    assert accommodation[1] == "2 часа"
+    assert accommodation[3] == "ABC"
    
 
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_not_existing_id(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    non_existing_accommodation = Accommodation(accommodation_id=999, duration="2 часа", location="Главная площадь", 
-                                                a_type="Фестиваль", datetime=datetime(2025, 4, 2, 14, 0, 0))
-    
+    non_existing_accommodation = Accommodation(accommodation_id=3, cost=33450, address="ул. Дмитриевского, 7", 
+                    name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
+                                                departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
+
     await accommodation_repo.update(non_existing_accommodation)
     
     result = await db_session.execute(text("SELECT * FROM accommodations WHERE id = :id"), {"id": 999})
@@ -118,7 +122,7 @@ async def test_delete_existing_accommodation(db_session: AsyncSession) -> None:
     result = await db_session.execute(text("SELECT * FROM accommodations"))
     accommodation = result.fetchone()
 
-    assert '4 часа' not in accommodation
+    assert 'Four Seasons' not in accommodation
 
 
 @pytest.mark.asyncio(loop_scope="function") 
@@ -139,7 +143,7 @@ async def test_get_by_id_existing_accommodation(db_session: AsyncSession) -> Non
     accommodation = await accommodation_repo.get_by_id(1)
 
     assert accommodation is not None
-    assert accommodation.a_type == "Концерт"
+    assert accommodation.name == "Four Seasons"
 
 
 @pytest.mark.asyncio(loop_scope="function") 
@@ -153,10 +157,10 @@ async def test_get_by_id_not_existing_accommodation(db_session: AsyncSession) ->
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_get_list_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    list_of_accommodations = await accommodation_repo.get_list()
+    list_of_accommodation = await accommodation_repo.get_list()
 
-    accommodation_names = [accommodations.a_type for accommodations in list_of_accommodations]
-    expected_accommodation_names = [accommodation["event_name"] for accommodation in accommodations_data]
+    accommodation_names = [accommodation.e_type for accommodation in list_of_accommodation]
+    expected_accommodation_names = [accommodation["type"] for accommodation in accommodation_data]
     
     accommodation_names.sort()
     expected_accommodation_names.sort()

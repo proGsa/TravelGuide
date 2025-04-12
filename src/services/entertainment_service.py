@@ -50,5 +50,5 @@ class EntertainmentService(IEntertainmentService):
         except (Exception):
             raise ValueError("Размещение не найдено.")
 
-    async def get_all(self) -> list[Entertainment]:
+    async def get_list(self) -> list[Entertainment]:
         return await self.repository.get_list()

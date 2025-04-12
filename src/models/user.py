@@ -22,6 +22,7 @@ class User(BaseModel):
     email: EmailStr
     login: str
     password: str
+    is_admin: bool = False
 
     @field_validator("user_id")
     @classmethod

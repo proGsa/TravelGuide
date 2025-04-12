@@ -29,7 +29,7 @@ class AccommodationService(IAccommodationService):
     async def get_by_id(self, accommodation_id: int) -> Accommodation | None:
         return await self.repository.get_by_id(accommodation_id)
 
-    async def get_all(self) -> list[Accommodation]:
+    async def get_list(self) -> list[Accommodation]:
         return await self.repository.get_list()
 
     async def add(self, accommodation: Accommodation) -> Accommodation:
