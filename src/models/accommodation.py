@@ -14,13 +14,13 @@ class Accommodation(BaseModel):
     MAX_RATE: ClassVar[int] = 5
 
     accommodation_id: int
-    cost: int
+    price: int
     address: str
     name: str
-    e_type: str
+    type: str
     rating: int
-    entry_datetime: datetime
-    departure_datetime: datetime 
+    check_in: datetime
+    check_out: datetime 
 
     @field_validator('accommodation_id')
     @classmethod
@@ -29,19 +29,19 @@ class Accommodation(BaseModel):
             raise ValueError('accommodation_id должен быть положительным числом')
         return value
 
-    @field_validator('cost')
+    @field_validator('price')
     @classmethod
-    def check_cost_is_positive(cls, value: int) -> int:
+    def check_price_is_positive(cls, value: int) -> int:
         if value <= 0:
-            raise ValueError('cost должен быть положительным числом')
+            raise ValueError('price должен быть положительным числом')
         return value
 
-    @field_validator('e_type')
+    @field_validator('type')
     @classmethod
-    def validate_e_type(cls, v: str) -> str:
+    def validate_type(cls, v: str) -> str:
         allowed_types = {'Отель', 'Хостел', 'Аппартаменты', 'Квартира'}
         if v not in allowed_types:
-            raise ValueError(f'e_type должен быть одним из следующих: {", ".join(allowed_types)}')
+            raise ValueError(f'type должен быть одним из следующих: {", ".join(allowed_types)}')
         return v
 
     @field_validator('name')
@@ -71,10 +71,10 @@ class Accommodation(BaseModel):
             raise ValueError('rate не может быть больше 5')
         return value
         
-    @field_validator('departure_datetime')
+    @field_validator('check_out')
     @classmethod
     def check_datetime_order(cls, value: datetime, values: ValidationInfo) -> datetime:
-        entry_time = values.data['entry_datetime']
-        if entry_time and value <= entry_time:
-            raise ValueError('departure_datetime должен быть позже entry_datetime')
+        check_in = values.data['check_in']
+        if check_in and value <= check_in:
+            raise ValueError('check_out должен быть позже entry_datetime')
         return value

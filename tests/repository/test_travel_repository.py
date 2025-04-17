@@ -330,13 +330,13 @@ async def test_get_list_travel(db_session: AsyncSession) -> None:
         for _, accommodation in enumerate(related_accommodations):
             expected_accommodation = accommodations_data[1] if travel.travel_id == 1 else accommodations_data[0]
 
-            assert accommodation.cost == expected_accommodation["price"]
+            assert accommodation.price == expected_accommodation["price"]
             assert accommodation.address == expected_accommodation["address"]
             assert accommodation.name == expected_accommodation["name"]
-            assert accommodation.e_type == expected_accommodation["type"]
+            assert accommodation.type == expected_accommodation["type"]
             assert accommodation.rating == expected_accommodation["rating"]
-            assert accommodation.entry_datetime == expected_accommodation["check_in"]
-            assert accommodation.departure_datetime == expected_accommodation["check_out"]
+            assert accommodation.check_in == expected_accommodation["check_in"]
+            assert accommodation.check_out == expected_accommodation["check_out"]
 
         related_entertainments = travel.entertainments
         assert len(related_entertainments) == len([ta for ta in tr_a if ta[0] == travel.travel_id])
@@ -346,6 +346,6 @@ async def test_get_list_travel(db_session: AsyncSession) -> None:
             expected_entertainment = entertainment_data[0] if travel.travel_id == 1 else entertainment_data[1]
 
             assert entertainment.duration == expected_entertainment["duration"]
-            assert entertainment.location == expected_entertainment["address"]
-            assert entertainment.a_type == expected_entertainment["event_name"]
-            assert entertainment.datetime == expected_entertainment["event_time"]
+            assert entertainment.address == expected_entertainment["address"]
+            assert entertainment.event_name == expected_entertainment["event_name"]
+            assert entertainment.event_time == expected_entertainment["event_time"]

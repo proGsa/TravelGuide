@@ -54,8 +54,8 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_new_entertainment(db_session: AsyncSession) -> None:
     entertainment_repo = EntertainmentRepository(db_session)
-    new_entertainment = Entertainment(entertainment_id=3, duration="2 часа", location="Красная площадь", 
-                                            a_type="Музей", datetime=datetime(2025, 4, 2, 14, 0, 0))
+    new_entertainment = Entertainment(entertainment_id=3, duration="2 часа", address="Красная площадь", 
+                                            event_name="Музей", event_time=datetime(2025, 4, 2, 14, 0, 0))
 
     await entertainment_repo.add(new_entertainment)
 
@@ -67,8 +67,8 @@ async def test_add_new_entertainment(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_existing_entertainment(db_session: AsyncSession) -> None:
     entertainment_repo = EntertainmentRepository(db_session)
-    existing_entertainment = Entertainment(entertainment_id=1, duration="4 часа", location="Главная площадь",
-                                            a_type="Концерт", datetime=datetime(2025, 4, 10, 16, 0, 0))
+    existing_entertainment = Entertainment(entertainment_id=1, duration="4 часа", address="Главная площадь",
+                                            event_name="Концерт", event_time=datetime(2025, 4, 10, 16, 0, 0))
     
     await entertainment_repo.add(existing_entertainment)
     
@@ -84,8 +84,8 @@ async def test_add_existing_entertainment(db_session: AsyncSession) -> None:
 async def test_update_existing_entertainment(db_session: AsyncSession) -> None:
     entertainment_repo = EntertainmentRepository(db_session)
     
-    updated_entertainment = Entertainment(entertainment_id=1, duration="2 часа", location="Главная площадь",
-                                            a_type="Фестиваль", datetime=datetime(2025, 4, 2, 14, 0, 0))
+    updated_entertainment = Entertainment(entertainment_id=1, duration="2 часа", address="Главная площадь",
+                                            event_name="Фестиваль", event_time=datetime(2025, 4, 2, 14, 0, 0))
     await entertainment_repo.update(updated_entertainment)
 
     result = await db_session.execute(text("SELECT * FROM entertainment WHERE id = :id"), {"id": 1})
@@ -98,8 +98,8 @@ async def test_update_existing_entertainment(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_not_existing_id(db_session: AsyncSession) -> None:
     entertainment_repo = EntertainmentRepository(db_session)
-    non_existing_entertainment = Entertainment(entertainment_id=999, duration="2 часа", location="Главная площадь", 
-                                                a_type="Фестиваль", datetime=datetime(2025, 4, 2, 14, 0, 0))
+    non_existing_entertainment = Entertainment(entertainment_id=999, duration="2 часа", address="Главная площадь", 
+                                                event_name="Фестиваль", event_time=datetime(2025, 4, 2, 14, 0, 0))
     
     await entertainment_repo.update(non_existing_entertainment)
     
@@ -139,7 +139,7 @@ async def test_get_by_id_existing_entertainment(db_session: AsyncSession) -> Non
     entertainment = await entertainment_repo.get_by_id(1)
 
     assert entertainment is not None
-    assert entertainment.a_type == "Концерт"
+    assert entertainment.event_name == "Концерт"
 
 
 @pytest.mark.asyncio(loop_scope="function") 
@@ -155,7 +155,7 @@ async def test_get_list_entertainment(db_session: AsyncSession) -> None:
     entertainment_repo = EntertainmentRepository(db_session)
     list_of_entertainments = await entertainment_repo.get_list()
 
-    entertainment_names = [entertainments.a_type for entertainments in list_of_entertainments]
+    entertainment_names = [entertainments.event_name for entertainments in list_of_entertainments]
     expected_entertainment_names = [entertainment["event_name"] for entertainment in entertainments_data]
     
     entertainment_names.sort()

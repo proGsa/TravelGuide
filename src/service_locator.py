@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import AsyncGenerator
+import asyncio
 
+from dataclasses import dataclass
+from typing import Any
+
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -136,17 +139,34 @@ class ServiceLocator:
         return self.controllers.user_contr
 
 
-engine = create_async_engine("postgresql+asyncpg://nastya@localhost:5432/postgres", echo=True)
-AsyncSessionMaker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-async def get_db() -> AsyncGenerator[AsyncSession]:
-    async with AsyncSessionMaker() as session:
-        yield session
+async def get_sessionmaker(max_retries: int = 5, delay: int = 2) -> Any:
+    engine = create_async_engine(
+        "postgresql+asyncpg://nastya@localhost:5432/postgres",
+        connect_args={
+            "server_settings": {
+                "search_path": "travel_db" 
+            }
+        },
+        echo=True
+    )
+    
+    for attempt in range(max_retries):
+        try:
+            return sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+        except OperationalError as e:
+            print(f"Ошибка подключения к БД: {e}")
+            if attempt < max_retries - 1:
+                print(f"Повторная попытка подключения через {delay} секунд...")
+                await asyncio.sleep(delay)
+            else:
+                print("Превышено максимальное количество попыток подключения.")
+                raise
+    return None
 
 
 async def get_service_locator() -> ServiceLocator:
-    async for session in get_db():
+    async_session_maker = await get_sessionmaker()
+    async with async_session_maker() as session:
         acc_repo = AccommodationRepository(session)
         city_repo = CityRepository(session)
         d_route_repo = DirectoryRouteRepository(session, city_repo)

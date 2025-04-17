@@ -13,7 +13,7 @@ class EntertainmentRepository(IEntertainmentRepository):
         self.session = session
 
     async def get_list(self) -> list[Entertainment]:
-        query = text("SELECT * FROM entertainment")
+        query = text("SELECT * FROM entertainment ORDER BY id")
         try:
             result = await self.session.execute(query)
             result = result.mappings()
@@ -21,9 +21,9 @@ class EntertainmentRepository(IEntertainmentRepository):
                 Entertainment(
                     entertainment_id=row["id"],
                     duration=row["duration"],
-                    location=row["address"],
-                    a_type=row["event_name"],
-                    datetime=row["event_time"]
+                    address=row["address"],
+                    event_name=row["event_name"],
+                    event_time=row["event_time"]
                 )
                 for row in result
             ]
@@ -40,9 +40,9 @@ class EntertainmentRepository(IEntertainmentRepository):
                 return Entertainment(
                     entertainment_id=result["id"],
                     duration=result["duration"],
-                    location=result["address"],
-                    a_type=result["event_name"],
-                    datetime=result["event_time"])
+                    address=result["address"],
+                    event_name=result["event_name"],
+                    event_time=result["event_time"])
             return None
             print("Ничего не найдено")
         except SQLAlchemyError as e:
@@ -56,11 +56,10 @@ class EntertainmentRepository(IEntertainmentRepository):
         """)
         try:
             await self.session.execute(query, {
-                    "id": entertainment.entertainment_id,
                     "duration": entertainment.duration,
-                    "address": entertainment.location,
-                    "event_name": entertainment.a_type,
-                    "event_time": entertainment.datetime
+                    "address": entertainment.address,
+                    "event_name": entertainment.event_name,
+                    "event_time": entertainment.event_time
                 })
             await self.session.commit()
         except SQLAlchemyError as e:
@@ -80,11 +79,11 @@ class EntertainmentRepository(IEntertainmentRepository):
             await self.session.execute(query, {
                     "entertainment_id": update_entertainment.entertainment_id,
                     "duration": update_entertainment.duration,
-                    "address": update_entertainment.location,
-                    "event_name": update_entertainment.a_type,
-                    "event_time": update_entertainment.datetime
+                    "address": update_entertainment.address,
+                    "event_name": update_entertainment.event_name,
+                    "event_time": update_entertainment.event_time
                 })
-            
+            await self.session.commit()
         except SQLAlchemyError as e:
             print(f"Ошибка при обновлении развлечений с ID {update_entertainment.entertainment_id}: {e}")
             

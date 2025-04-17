@@ -40,22 +40,22 @@ class TravelController:
                             {
                                 "id": e.entertainment_id,
                                 "duration": e.duration,
-                                "address": e.location,
-                                "event_name": e.a_type,
-                                "event_time": e.datetime.isoformat()
+                                "address": e.address,
+                                "event_name": e.event_name,
+                                "event_time": e.event_time.isoformat()
                             }
                             for e in entertainment_list
                         ],
                          "accommodations": [
                             {
                                 "id": a.accommodation_id,
-                                "price": a.cost,
+                                "price": a.price,
                                 "address": a.address,
                                 "name": a.name,
-                                "e_type": a.e_type,
+                                "e_type": a.type,
                                 "rating": a.rating,
-                                "check_in": a.entry_datetime.isoformat(),
-                                "check_out": a.departure_datetime.isoformat()
+                                "check_in": a.check_in.isoformat(),
+                                "check_out": a.check_out.isoformat()
                             }
                             for a in accommodation_list
                         ]
@@ -134,22 +134,22 @@ class TravelController:
                             {
                                 "id": e.entertainment_id,
                                 "duration": e.duration,
-                                "address": e.location,
-                                "event_name": e.a_type,
-                                "event_time": e.datetime.isoformat()
+                                "address": e.address,
+                                "event_name": e.event_name,
+                                "event_time": e.event_time.isoformat()
                             }
                             for e in entertainment_list
                         ],
                         "accommodations": [
                             {
                                 "id": a.accommodation_id,
-                                "price": a.cost,
+                                "price": a.price,
                                 "address": a.address,
                                 "name": a.name,
-                                "e_type": a.e_type,
+                                "e_type": a.type,
                                 "rating": a.rating,
-                                "check_in": a.entry_datetime.isoformat(),
-                                "check_out": a.departure_datetime.isoformat()
+                                "check_in": a.check_in.isoformat(),
+                                "check_out": a.check_out.isoformat()
                             }
                             for a in accommodation_list
                         ]

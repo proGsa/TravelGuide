@@ -53,9 +53,9 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_new_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    new_accommodation = Accommodation(accommodation_id=3, cost=33450, address="ул. Дмитриевского, 7",
-            name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
-                                departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
+    new_accommodation = Accommodation(accommodation_id=3, price=33450, address="ул. Дмитриевского, 7",
+            name="ABC", type="Квартира", rating=3, check_in=datetime(2025, 4, 2, 14, 0, 0), 
+                                check_out=datetime(2025, 4, 6, 18, 0, 0))
 
     await accommodation_repo.add(new_accommodation)
 
@@ -67,9 +67,9 @@ async def test_add_new_accommodation(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_add_existing_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    existing_accommodation = Accommodation(accommodation_id=3, cost=46840, address="Улица Гоголя", name="Four Seasons", 
-                            e_type="Отель", rating=5, entry_datetime=datetime(2025, 3, 29, 12, 30, 0), 
-                                    departure_datetime=datetime(2025, 4, 5, 18, 0, 0))
+    existing_accommodation = Accommodation(accommodation_id=3, price=46840, address="Улица Гоголя", name="Four Seasons", 
+                            type="Отель", rating=5, check_in=datetime(2025, 3, 29, 12, 30, 0), 
+                                    check_out=datetime(2025, 4, 5, 18, 0, 0))
 
     await accommodation_repo.add(existing_accommodation)
     
@@ -85,9 +85,9 @@ async def test_add_existing_accommodation(db_session: AsyncSession) -> None:
 async def test_update_existing_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
     
-    updated_accommodation = Accommodation(accommodation_id=1, cost=33450, address="ул. Дмитриевского, 7", 
-                name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
-                            departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
+    updated_accommodation = Accommodation(accommodation_id=1, price=33450, address="ул. Дмитриевского, 7", 
+                name="ABC", type="Квартира", rating=3, check_in=datetime(2025, 4, 2, 14, 0, 0), 
+                            check_out=datetime(2025, 4, 6, 18, 0, 0))
 
     await accommodation_repo.update(updated_accommodation)
 
@@ -101,9 +101,9 @@ async def test_update_existing_accommodation(db_session: AsyncSession) -> None:
 @pytest.mark.asyncio(loop_scope="function") 
 async def test_update_not_existing_id(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
-    non_existing_accommodation = Accommodation(accommodation_id=3, cost=33450, address="ул. Дмитриевского, 7", 
-                    name="ABC", e_type="Квартира", rating=3, entry_datetime=datetime(2025, 4, 2, 14, 0, 0), 
-                                                departure_datetime=datetime(2025, 4, 6, 18, 0, 0))
+    non_existing_accommodation = Accommodation(accommodation_id=3, price=33450, address="ул. Дмитриевского, 7", 
+                    name="ABC", type="Квартира", rating=3, check_in=datetime(2025, 4, 2, 14, 0, 0), 
+                                                check_out=datetime(2025, 4, 6, 18, 0, 0))
 
     await accommodation_repo.update(non_existing_accommodation)
     
@@ -159,7 +159,7 @@ async def test_get_list_accommodation(db_session: AsyncSession) -> None:
     accommodation_repo = AccommodationRepository(db_session)
     list_of_accommodation = await accommodation_repo.get_list()
 
-    accommodation_names = [accommodation.e_type for accommodation in list_of_accommodation]
+    accommodation_names = [accommodation.type for accommodation in list_of_accommodation]
     expected_accommodation_names = [accommodation["type"] for accommodation in accommodation_data]
     
     accommodation_names.sort()

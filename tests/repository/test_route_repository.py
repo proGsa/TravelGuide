@@ -251,13 +251,13 @@ async def test_add_new_route(db_session: AsyncSession) -> None:
         None
         )
         assert expected_accommodation is not None
-        assert accommodation.cost == expected_accommodation.cost
+        assert accommodation.price == expected_accommodation.price
         assert accommodation.address == expected_accommodation.address
         assert accommodation.name == expected_accommodation.name
-        assert accommodation.e_type == expected_accommodation.e_type
+        assert accommodation.type == expected_accommodation.type
         assert accommodation.rating == expected_accommodation.rating
-        assert accommodation.entry_datetime == expected_accommodation.entry_datetime
-        assert accommodation.departure_datetime == expected_accommodation.departure_datetime
+        assert accommodation.check_in == expected_accommodation.check_in
+        assert accommodation.check_out == expected_accommodation.check_out
 
     expected_entertainments = [
         a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None]
@@ -274,9 +274,9 @@ async def test_add_new_route(db_session: AsyncSession) -> None:
         assert expected_entertainment is not None
 
         assert entertainment.duration == expected_entertainment.duration
-        assert entertainment.location == expected_entertainment.location
-        assert entertainment.a_type == expected_entertainment.a_type
-        assert entertainment.datetime == expected_entertainment.datetime
+        assert entertainment.address == expected_entertainment.address
+        assert entertainment.event_name == expected_entertainment.event_name
+        assert entertainment.event_time == expected_entertainment.event_time
     
 
 @pytest.mark.asyncio
@@ -342,13 +342,13 @@ async def test_add_existing_route(db_session: AsyncSession) -> None:
     travel_accommodations = existing_route.travels.accommodations[0]
     assert travel_accommodations is not None
     assert expected_accommodations is not None
-    assert travel_accommodations.cost == expected_accommodations.cost
+    assert travel_accommodations.price == expected_accommodations.price
     assert travel_accommodations.address == expected_accommodations.address
     assert travel_accommodations.name == expected_accommodations.name
-    assert travel_accommodations.e_type == expected_accommodations.e_type
+    assert travel_accommodations.type == expected_accommodations.type
     assert travel_accommodations.rating == expected_accommodations.rating
-    assert travel_accommodations.entry_datetime == expected_accommodations.entry_datetime
-    assert travel_accommodations.departure_datetime == expected_accommodations.departure_datetime
+    assert travel_accommodations.check_in == expected_accommodations.check_in
+    assert travel_accommodations.check_out == expected_accommodations.check_out
 
     expected_entertainments = await entertainment_repo.get_by_id(1)
     travel_entertainments = existing_route.travels.entertainments
@@ -356,9 +356,9 @@ async def test_add_existing_route(db_session: AsyncSession) -> None:
     assert travel_entertainments is not None
     assert expected_entertainments is not None
     assert travel_entertainments[0].duration == expected_entertainments.duration
-    assert travel_entertainments[0].location == expected_entertainments.location
-    assert travel_entertainments[0].a_type == expected_entertainments.a_type
-    assert travel_entertainments[0].datetime == expected_entertainments.datetime
+    assert travel_entertainments[0].address == expected_entertainments.address
+    assert travel_entertainments[0].event_name == expected_entertainments.event_name
+    assert travel_entertainments[0].event_time == expected_entertainments.event_time
 
 
 @pytest.mark.asyncio
@@ -430,13 +430,13 @@ async def test_update_existing_route(db_session: AsyncSession) -> None:
             None
         )
         assert expected_accommodation is not None
-        assert accommodation.cost == expected_accommodation.cost
+        assert accommodation.price == expected_accommodation.price
         assert accommodation.address == expected_accommodation.address
         assert accommodation.name == expected_accommodation.name
-        assert accommodation.e_type == expected_accommodation.e_type
+        assert accommodation.type == expected_accommodation.type
         assert accommodation.rating == expected_accommodation.rating
-        assert accommodation.entry_datetime == expected_accommodation.entry_datetime
-        assert accommodation.departure_datetime == expected_accommodation.departure_datetime
+        assert accommodation.check_in == expected_accommodation.check_in
+        assert accommodation.check_out == expected_accommodation.check_out
 
     expected_entertainments = [
         a for a in [await entertainment_repo.get_by_id(2), await entertainment_repo.get_by_id(1)] if a is not None
@@ -454,9 +454,9 @@ async def test_update_existing_route(db_session: AsyncSession) -> None:
         assert expected_entertainment is not None
 
         assert entertainment.duration == expected_entertainment.duration
-        assert entertainment.location == expected_entertainment.location
-        assert entertainment.a_type == expected_entertainment.a_type
-        assert entertainment.datetime == expected_entertainment.datetime
+        assert entertainment.address == expected_entertainment.address
+        assert entertainment.event_name == expected_entertainment.event_name
+        assert entertainment.event_time == expected_entertainment.event_time
 
 
 @pytest.mark.asyncio
@@ -647,13 +647,13 @@ async def test_get_list_route(db_session: AsyncSession) -> None:
         for accommodation in related_accommodations:
             expected_accommodation = accommodations_data[1] if r.travels.travel_id == 1 else accommodations_data[0]
 
-            assert accommodation.cost == expected_accommodation["price"]
+            assert accommodation.price == expected_accommodation["price"]
             assert accommodation.address == expected_accommodation["address"]
             assert accommodation.name == expected_accommodation["name"]
-            assert accommodation.e_type == expected_accommodation["type"]
+            assert accommodation.type == expected_accommodation["type"]
             assert accommodation.rating == expected_accommodation["rating"]
-            assert accommodation.entry_datetime == expected_accommodation["check_in"]
-            assert accommodation.departure_datetime == expected_accommodation["check_out"]
+            assert accommodation.check_in == expected_accommodation["check_in"]
+            assert accommodation.check_out == expected_accommodation["check_out"]
 
         related_entertainments = r.travels.entertainments
         expected_entertainments = [ta for ta in tr_a if ta[0] == r.travels.travel_id]
@@ -664,9 +664,9 @@ async def test_get_list_route(db_session: AsyncSession) -> None:
             expected_entertainment = entertainment_data[0] if r.travels.travel_id == 1 else entertainment_data[1]
 
             assert entertainment.duration == expected_entertainment["duration"]
-            assert entertainment.location == expected_entertainment["address"]
-            assert entertainment.a_type == expected_entertainment["event_name"]
-            assert entertainment.datetime == expected_entertainment["event_time"]
+            assert entertainment.address == expected_entertainment["address"]
+            assert entertainment.event_name == expected_entertainment["event_name"]
+            assert entertainment.event_time == expected_entertainment["event_time"]
 
 @pytest.mark.asyncio
 async def test_get_routes_by_travel_id_ordered(db_session: AsyncSession) -> None:

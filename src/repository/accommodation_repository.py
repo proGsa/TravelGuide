@@ -14,20 +14,20 @@ class AccommodationRepository(IAccommodationRepository):
         self.session = session
 
     async def get_list(self) -> list[Accommodation]:
-        query = text("SELECT * FROM accommodations")
+        query = text("SELECT * FROM accommodations ORDER BY id")
         try:
             result = await self.session.execute(query)
             result = result.mappings()
             return [
                 Accommodation(
                     accommodation_id=row["id"],
-                    cost=row["price"],
+                    price=row["price"],
                     address=row["address"],
                     name=row["name"],
-                    e_type=row["type"],
+                    type=row["type"],
                     rating=row["rating"],
-                    entry_datetime=row["check_in"],
-                    departure_datetime=row["check_out"])
+                    check_in=row["check_in"],
+                    check_out=row["check_out"])
                 
                 for row in result
             ]
@@ -43,13 +43,13 @@ class AccommodationRepository(IAccommodationRepository):
             if result:
                 return Accommodation(
                     accommodation_id=result["id"],
-                    cost=result["price"],
+                    price=result["price"],
                     address=result["address"],
                     name=result["name"],
-                    e_type=result["type"],
+                    type=result["type"],
                     rating=result["rating"],
-                    entry_datetime=result["check_in"],
-                    departure_datetime=result["check_out"])
+                    check_in=result["check_in"],
+                    check_out=result["check_out"])
             return None
         except SQLAlchemyError as e:
             print(f"Ошибка при получении размещения по ID {accommodation_id}: {e}")
@@ -58,17 +58,17 @@ class AccommodationRepository(IAccommodationRepository):
     async def add(self, accommodation: Accommodation) -> None:
         query = text("""
             INSERT INTO accommodations (price, address, name, type, rating, check_in, check_out)
-            VALUES (:price, :address, :name, :e_type, :rating, :check_in, :check_out)
+            VALUES (:price, :address, :name, :type, :rating, :check_in, :check_out)
         """)
         try:
             await self.session.execute(query, {
-                "price": accommodation.cost,
+                "price": accommodation.price,
                 "address": accommodation.address,
                 "name": accommodation.name,
-                "e_type": accommodation.e_type,
+                "type": accommodation.type,
                 "rating": accommodation.rating,
-                "check_in": accommodation.entry_datetime,
-                "check_out": accommodation.departure_datetime
+                "check_in": accommodation.check_in,
+                "check_out": accommodation.check_out
             })
             await self.session.commit()
         except IntegrityError:
@@ -84,7 +84,7 @@ class AccommodationRepository(IAccommodationRepository):
             SET price = :price,
                 address = :address,
                 name = :name,
-                type = :e_type,
+                type = :type,
                 rating = :rating,
                 check_in = :check_in,
                 check_out = :check_out
@@ -92,13 +92,13 @@ class AccommodationRepository(IAccommodationRepository):
         """)
         try:
             await self.session.execute(query, {
-                    "price": update_accommodation.cost,
+                    "price": update_accommodation.price,
                     "address": update_accommodation.address,
                     "name": update_accommodation.name,
-                    "e_type": update_accommodation.e_type,
+                    "type": update_accommodation.type,
                     "rating": update_accommodation.rating,
-                    "check_in": update_accommodation.entry_datetime,
-                    "check_out": update_accommodation.departure_datetime,
+                    "check_in": update_accommodation.check_in,
+                    "check_out": update_accommodation.check_out,
                     "accommodation_id": update_accommodation.accommodation_id
                 })
             await self.session.commit()
