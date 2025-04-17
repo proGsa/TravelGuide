@@ -15,6 +15,8 @@ dependencies = [
     "asyncpg (>=0.30.0,<0.31.0)",
     "pytest-asyncio (>=0.26.0,<0.27.0)",
     "fastapi (>=0.115.12,<0.116.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "uvicorn (>=0.34.1,<0.35.0)",
 ]
 
 [build-system]
@@ -119,6 +121,7 @@ select = [
     "C901"  # cyclomatic complexity limit
 ]
 ignore = [
+    "PGH003",
     "RUF001",
     "RUF029",
     "B904",   # just ignore use 'raise ... from err'
